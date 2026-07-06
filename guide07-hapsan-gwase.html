@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>같은 해에 2건 팔면 세금이 늘어난다 — 합산과세 | 절세랩</title>
+<meta name="description" content="양도소득 합산과세의 구조와 매도 연도를 나누는 것만으로 세금이 줄어드는 원리를 예시로 설명합니다.">
+<style>
+  :root { --ink: #111111; --paper: #ffffff; --accent: #ff4d00; --gray: #f4f4f4; --mid: #757575; --line: #e0e0e0; }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, "Pretendard", "Noto Sans KR", sans-serif; color: var(--ink); background: var(--paper); line-height: 1.75; }
+  .wrap { max-width: 760px; margin: 0 auto; padding: 0 20px; }
+  header { border-bottom: 2px solid var(--ink); }
+  .nav { display: flex; justify-content: space-between; align-items: center; padding: 18px 0; }
+  .logo { font-size: 22px; font-weight: 900; letter-spacing: -0.5px; color: var(--ink); text-decoration: none; }
+  .logo span { color: var(--accent); }
+  .nav a { color: var(--ink); text-decoration: none; font-weight: 700; font-size: 14px; margin-left: 20px; }
+  .label { display: inline-block; background: var(--ink); color: #fff; font-size: 12px; font-weight: 800; letter-spacing: 1.5px; padding: 6px 12px; margin: 48px 0 20px; }
+  h1 { font-size: clamp(28px, 5vw, 42px); font-weight: 900; letter-spacing: -1.5px; line-height: 1.2; margin-bottom: 40px; }
+  article h2 { font-size: 22px; font-weight: 900; letter-spacing: -0.5px; margin: 40px 0 14px; padding-top: 8px; border-top: 2px solid var(--ink); }
+  article p { margin-bottom: 16px; font-size: 16px; }
+  article ul { margin: 0 0 16px 22px; }
+  article li { margin-bottom: 8px; font-size: 16px; }
+  article strong { font-weight: 800; }
+  article a { color: var(--accent); font-weight: 700; }
+  article table { width: 100%; border-collapse: collapse; margin: 0 0 16px; font-size: 14px; }
+  article th, article td { border: 2px solid var(--ink); padding: 10px 12px; text-align: left; }
+  article th { background: var(--ink); color: #fff; font-weight: 800; }
+  .formula { background: var(--gray); border-left: 4px solid var(--accent); padding: 14px 16px; font-weight: 800; font-size: 15px; }
+  .cta { margin: 48px 0; background: var(--ink); color: #fff; padding: 28px 24px; }
+  .cta h3 { font-size: 20px; font-weight: 900; margin-bottom: 6px; }
+  .cta p { font-size: 14px; opacity: .8; margin-bottom: 16px; }
+  .cta a { display: inline-block; background: var(--accent); color: #fff; text-decoration: none; font-weight: 900; padding: 12px 28px; font-size: 15px; }
+  .other { margin: 48px 0; }
+  .other h3 { font-size: 16px; font-weight: 900; margin-bottom: 12px; }
+  .other a { display: block; color: var(--ink); text-decoration: none; font-weight: 700; font-size: 14px; padding: 10px 0; border-bottom: 1px solid var(--line); }
+  .other a:hover { color: var(--accent); }
+  .disclaimer { margin: 32px 0; padding: 16px; background: var(--gray); font-size: 12px; color: var(--mid); border-left: 4px solid var(--accent); }
+  footer { border-top: 2px solid var(--ink); padding: 28px 0; margin-top: 48px; font-size: 13px; color: var(--mid); }
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap nav">
+    <a class="logo" href="index.html">절세<span>랩</span></a>
+    <nav>
+      <a href="index.html#calc">계산기</a>
+      <a href="index.html#guide">절세 가이드</a>
+    </nav>
+  </div>
+</header>
+<div class="wrap">
+  <span class="label">GUIDE 07</span>
+  <h1>같은 해에 2건 팔면 세금이 늘어난다 — 합산과세</h1>
+  <article>
+<p>양도소득세는 건별로 끝나는 세금이 아니라 <strong>1월 1일부터 12월 31일까지 판 자산을 모두 합산</strong>해 누진세율을 적용하는 세금입니다. 그래서 같은 두 채를 팔아도 같은 해에 팔면 세금이 커지고, 해를 나눠 팔면 줄어듭니다.</p>
+
+<h2>왜 늘어나는가</h2>
+<p>누진세율 구조에서는 과세표준이 커질수록 높은 구간의 세율이 적용됩니다. 각각 과세표준 3억인 부동산 두 건을 예로 들면:</p>
+<ul>
+<li><strong>같은 해 매도</strong>: 합산 6억 → 6억 전체에 누진세율 적용, 두 번째 3억은 사실상 40~42% 구간</li>
+<li><strong>연도 분산 매도</strong>: 각 3억씩 → 각각 38% 이하 구간에서 계산</li>
+</ul>
+<p>여기에 <strong>기본공제 250만 원이 연 1회</strong>만 적용된다는 점까지 더해져, 연도 분산은 그 자체로 절세가 됩니다. 과세표준이 클수록 격차는 수천만 원 단위로 벌어집니다.</p>
+
+<h2>양도 시기는 "잔금일" 기준</h2>
+<p>양도 시기는 원칙적으로 <strong>잔금청산일과 등기접수일 중 빠른 날</strong>입니다. 12월에 계약해도 잔금을 1월로 미루면 다음 해 양도가 됩니다. 연말 매도 협상에서 잔금일을 며칠 조정하는 것만으로 합산을 피할 수 있다는 뜻입니다.</p>
+
+<h2>손실과의 통산 — 반대로 활용하기</h2>
+<p>합산은 불리하기만 한 것이 아닙니다. 손실이 난 자산과 이익이 난 자산을 <strong>같은 해에</strong> 팔면 손익이 통산되어 세금이 줄어듭니다.</p>
+<ul>
+<li>이익 5억 + 손실 2억을 같은 해 매도 → 과세대상 3억</li>
+<li>단, 양도소득 손실은 다음 해로 이월되지 않습니다. 손실 통산은 반드시 같은 해 안에서만 가능합니다.</li>
+<li>비과세되는 자산의 손실(예: 1주택 비과세분)은 통산에 쓸 수 없습니다.</li>
+</ul>
+
+<h2>정리</h2>
+<p>이익+이익은 해를 나누고, 이익+손실은 해를 합치는 것이 기본 원칙입니다. 올해 이미 판 자산이 있다면 <a href="index.html#calc">계산기</a>의 "올해 이미 양도한 다른 자산" 입력란에 반영해 실제 한계세율로 계산해 보세요.</p>
+  </article>
+  <div class="cta">
+    <h3>내 세금은 얼마일까?</h3>
+    <p>지금 조건과 절세 시나리오별 세금을 30초 만에 비교해 보세요.</p>
+    <a href="index.html#calc">양도세 계산기 열기 →</a>
+  </div>
+  <div class="other">
+    <h3>다른 가이드</h3>
+    <a href="guide01-bigwase-12eok.html">GUIDE 01 — 1세대 1주택 비과세, 12억의 진실</a>
+    <a href="guide02-sedae-bunri.html">GUIDE 02 — 세대분리, 언제까지 해야 인정될까</a>
+    <a href="guide03-sangsaeng-imdae.html">GUIDE 03 — 상생임대인 제도로 거주요건 채우기</a>
+    <a href="guide04-jangteukgong-80.html">GUIDE 04 — 장기보유특별공제 최대 80% 받는 법</a>
+    <a href="guide05-sangsok-jeungyeo.html">GUIDE 05 — 상속·증여받은 집, 취득가액은 얼마일까</a>
+    <a href="guide06-hwansan-chwidcuk.html">GUIDE 06 — 옛날에 산 집, 취득가액을 모른다면 — 환산취득가액</a>
+    <a href="guide08-gongdong-myeongui.html">GUIDE 08 — 공동명의 절세와 이월과세 10년의 함정</a>
+    <a href="guide09-honin-bongyang.html">GUIDE 09 — 혼인·부모 봉양으로 2주택이 됐다면</a>
+    <a href="guide10-bunyanggwon-ipjugwon.html">GUIDE 10 — 분양권·입주권, 주택과 뭐가 다른가</a>
+  </div>
+  <div class="disclaimer">⚠️ 본 글은 일반적인 세법 정보를 다루며, 개인별 사실관계에 따라 결론이 달라질 수 있습니다. 실제 의사결정 전에는 반드시 세무 전문가와 상담하시기 바랍니다. 세법 개정에 따라 내용이 달라질 수 있습니다.</div>
+</div>
+<footer><div class="wrap">절세랩 © 2026 · 본 사이트의 모든 내용은 참고용이며 법적 효력이 없습니다</div></footer>
+</body>
+</html>

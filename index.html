@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>절세랩 — 부동산 양도세 계산기 & 절세 시나리오 진단</title>
+<meta name="description" content="양도소득세를 30초 만에 계산하고, 세대분리·상생임대·거주요건 등 절세 시나리오별로 세금이 얼마나 줄어드는지 비교해보세요.">
+<style>
+  :root {
+    --ink: #111111;
+    --paper: #ffffff;
+    --accent: #ff4d00;
+    --gray: #f4f4f4;
+    --mid: #757575;
+    --line: #e0e0e0;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Pretendard", "Noto Sans KR", sans-serif;
+    color: var(--ink);
+    background: var(--paper);
+    line-height: 1.6;
+  }
+  .wrap { max-width: 880px; margin: 0 auto; padding: 0 20px; }
+
+  /* Header */
+  header { border-bottom: 2px solid var(--ink); }
+  .nav { display: flex; justify-content: space-between; align-items: center; padding: 18px 0; }
+  .logo { font-size: 22px; font-weight: 900; letter-spacing: -0.5px; }
+  .logo span { color: var(--accent); }
+  .nav a { color: var(--ink); text-decoration: none; font-weight: 700; font-size: 14px; margin-left: 20px; }
+
+  /* Hero */
+  .hero { padding: 64px 0 48px; }
+  .hero h1 {
+    font-size: clamp(34px, 6vw, 58px);
+    font-weight: 900;
+    letter-spacing: -2px;
+    line-height: 1.12;
+    text-transform: none;
+  }
+  .hero h1 em { font-style: normal; color: var(--accent); }
+  .hero p { margin-top: 18px; font-size: 17px; color: var(--mid); max-width: 560px; }
+
+  /* Sections */
+  section { padding: 48px 0; }
+  .section-label {
+    display: inline-block; background: var(--ink); color: #fff;
+    font-size: 12px; font-weight: 800; letter-spacing: 1.5px;
+    padding: 6px 12px; margin-bottom: 20px; text-transform: uppercase;
+  }
+  h2 { font-size: 28px; font-weight: 900; letter-spacing: -1px; margin-bottom: 8px; }
+  .sub { color: var(--mid); margin-bottom: 28px; font-size: 15px; }
+
+  /* Form */
+  .calc-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px 24px; }
+  @media (max-width: 640px) { .calc-grid { grid-template-columns: 1fr; } }
+  .field label { display: block; font-size: 13px; font-weight: 800; margin-bottom: 6px; }
+  .field input, .field select {
+    width: 100%; padding: 13px 14px; font-size: 16px;
+    border: 2px solid var(--ink); background: #fff; font-weight: 600;
+  }
+  .field input:focus, .field select:focus { outline: 3px solid var(--accent); outline-offset: -1px; }
+  .hint { font-size: 12px; color: var(--mid); margin-top: 4px; }
+  .check-row { display: flex; align-items: center; gap: 8px; margin-top: 8px; }
+  .check-row input { width: 18px; height: 18px; accent-color: var(--accent); }
+  .check-row label { font-size: 14px; font-weight: 700; }
+
+  .btn {
+    display: inline-block; margin-top: 28px; padding: 16px 44px;
+    background: var(--ink); color: #fff; font-size: 17px; font-weight: 900;
+    border: none; cursor: pointer; letter-spacing: 0.5px;
+    transition: background .15s;
+  }
+  .btn:hover { background: var(--accent); }
+
+  /* Results */
+  #result { display: none; }
+  .result-hero {
+    background: var(--ink); color: #fff; padding: 36px 32px; margin-bottom: 28px;
+  }
+  .result-hero .amount { font-size: clamp(36px, 7vw, 56px); font-weight: 900; letter-spacing: -2px; color: var(--accent); }
+  .result-hero .amount-label { font-size: 14px; font-weight: 700; opacity: .7; margin-bottom: 4px; }
+  .result-detail { margin-top: 16px; font-size: 14px; opacity: .85; }
+  .result-detail div { display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid rgba(255,255,255,.15); }
+
+  .scenario-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; }
+  .scenario {
+    border: 2px solid var(--ink); padding: 24px 20px; position: relative;
+  }
+  .scenario.best { background: var(--ink); color: #fff; }
+  .scenario .tag {
+    position: absolute; top: -12px; left: 16px; background: var(--accent);
+    color: #fff; font-size: 11px; font-weight: 800; padding: 3px 10px; letter-spacing: 1px;
+  }
+  .scenario h3 { font-size: 16px; font-weight: 900; margin-bottom: 10px; }
+  .scenario .s-amount { font-size: 26px; font-weight: 900; letter-spacing: -1px; }
+  .scenario.best .s-amount { color: var(--accent); }
+  .scenario .s-save { font-size: 13px; font-weight: 700; color: var(--accent); margin-top: 4px; }
+  .scenario p { font-size: 13px; margin-top: 10px; color: var(--mid); }
+  .scenario.best p { color: rgba(255,255,255,.75); }
+
+  .disclaimer {
+    margin-top: 28px; padding: 16px; background: var(--gray);
+    font-size: 12px; color: var(--mid); border-left: 4px solid var(--accent);
+  }
+
+  /* Guide */
+  .guide-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 16px; }
+  .guide-card { border: 2px solid var(--ink); padding: 24px 20px; text-decoration: none; color: var(--ink); transition: all .15s; display: block; }
+  .guide-card:hover { background: var(--ink); color: #fff; }
+  .guide-card .num { font-size: 13px; font-weight: 800; color: var(--accent); }
+  .guide-card h3 { font-size: 17px; font-weight: 900; margin: 6px 0; letter-spacing: -0.5px; }
+  .guide-card p { font-size: 13px; color: var(--mid); }
+  .guide-card:hover p { color: rgba(255,255,255,.75); }
+
+  /* Game */
+  .game-box { border: 3px solid var(--ink); padding: 40px 24px; text-align: center; }
+  .game-box .game-title { font-size: 20px; font-weight: 900; margin-bottom: 6px; }
+  .game-box .game-sub { font-size: 14px; color: var(--mid); margin-bottom: 24px; }
+  #gameArea {
+    height: 220px; display: flex; align-items: center; justify-content: center;
+    font-size: 20px; font-weight: 900; cursor: pointer; user-select: none;
+    background: var(--gray); transition: background .1s; letter-spacing: -0.5px;
+  }
+  #gameArea.waiting { background: var(--ink); color: #fff; }
+  #gameArea.go { background: var(--accent); color: #fff; }
+  .game-stats { margin-top: 16px; font-size: 14px; font-weight: 700; }
+  .game-stats span { color: var(--accent); }
+
+  footer { border-top: 2px solid var(--ink); padding: 28px 0; margin-top: 48px; font-size: 13px; color: var(--mid); }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap nav">
+    <div class="logo">절세<span>랩</span></div>
+    <nav>
+      <a href="#calc">계산기</a>
+      <a href="#guide">절세 가이드</a>
+      <a href="#game">쉬어가기</a>
+    </nav>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <div class="hero">
+    <h1>양도세, 팔기 전에<br><em>시나리오부터</em> 돌려보세요</h1>
+    <p>같은 집을 팔아도 언제·어떻게 파느냐에 따라 세금이 수천만 원 달라집니다. 30초 입력으로 내 상황의 양도세와 절세 시나리오를 비교해보세요.</p>
+  </div>
+
+  <section id="calc">
+    <span class="section-label">Calculator</span>
+    <h2>양도소득세 계산기</h2>
+    <p class="sub">주택 매도 기준 · 2026년 세율 반영 · 결과는 참고용입니다</p>
+
+    <div class="calc-grid">
+      <div class="field">
+        <label for="assetType">자산 유형</label>
+        <select id="assetType" onchange="toggleFields()">
+          <option value="house">주택 (아파트·빌라·단독)</option>
+          <option value="right">조합원입주권</option>
+          <option value="presale">분양권</option>
+          <option value="land">토지·상가 (사업용)</option>
+          <option value="landIdle">비사업용 토지</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="ownership">명의</label>
+        <select id="ownership">
+          <option value="single">단독명의</option>
+          <option value="joint">부부 공동명의 (50:50)</option>
+        </select>
+        <div class="hint">공동명의는 인별 과세로 세율·공제가 각각 적용됩니다</div>
+      </div>
+      <div class="field">
+        <label for="salePrice">양도가액 (매도 금액)</label>
+        <input type="text" id="salePrice" inputmode="numeric" placeholder="예: 250,000">
+        <div class="hint">만원 단위 입력 (25억 = 250,000)</div>
+      </div>
+      <div class="field">
+        <label for="buyPrice">취득가액 (매수 금액)</label>
+        <input type="text" id="buyPrice" inputmode="numeric" placeholder="예: 120,000">
+        <div class="hint">만원 단위 입력</div>
+      </div>
+      <div class="field">
+        <label for="expense">필요경비 (취득세·중개수수료·수리비 등)</label>
+        <input type="text" id="expense" inputmode="numeric" placeholder="예: 5,000">
+        <div class="hint">만원 단위 · 모르면 비워두세요</div>
+      </div>
+      <div class="field" id="fHouseCount">
+        <label for="houseCount">보유 주택 수</label>
+        <select id="houseCount">
+          <option value="1">1세대 1주택</option>
+          <option value="temp2">일시적 2주택 (비과세 특례)</option>
+          <option value="2">2주택</option>
+          <option value="3">3주택 이상</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="holdYears">보유 기간 (년)</label>
+        <input type="number" id="holdYears" min="0" max="50" placeholder="예: 8">
+      </div>
+      <div class="field" id="fLive">
+        <label for="liveYears">거주 기간 (년)</label>
+        <input type="number" id="liveYears" min="0" max="50" placeholder="예: 2">
+        <div class="hint">실제 전입해서 산 기간</div>
+      </div>
+      <div class="field">
+        <label for="otherGain">올해 이미 양도한 다른 자산의 양도소득금액</label>
+        <input type="text" id="otherGain" inputmode="numeric" placeholder="없으면 비워두세요">
+        <div class="hint">만원 단위 · 같은 해 양도분은 합산과세로 세율 구간이 올라갑니다</div>
+      </div>
+      <div class="field" id="fChecks">
+        <div class="check-row">
+          <input type="checkbox" id="adjusted">
+          <label for="adjusted">조정대상지역 (취득 당시)</label>
+        </div>
+        <div class="check-row">
+          <input type="checkbox" id="sangsaeng">
+          <label for="sangsaeng">상생임대차계약 체결·유지</label>
+        </div>
+        <div class="check-row">
+          <input type="checkbox" id="heavyTax">
+          <label for="heavyTax">다주택 중과 적용하여 계산</label>
+        </div>
+        <div class="hint">다주택 중과는 한시 유예가 반복 연장되어 왔습니다. 매도 시점의 유예 여부를 꼭 확인하세요.</div>
+      </div>
+    </div>
+
+    <button class="btn" onclick="calculate()">세금 계산하기</button>
+
+    <div id="result">
+      <div class="result-hero">
+        <div class="amount-label">현재 조건으로 팔면, 예상 양도소득세 (지방소득세 포함)</div>
+        <div class="amount" id="mainAmount">0원</div>
+        <div class="result-detail" id="detailRows"></div>
+      </div>
+
+      <span class="section-label">Scenarios</span>
+      <h2>절세 시나리오 비교</h2>
+      <p class="sub">지금 조건 vs 요건을 갖춘 뒤 팔 때 — 세금이 이렇게 달라집니다</p>
+      <div class="scenario-grid" id="scenarios"></div>
+
+      <div class="disclaimer">
+        ⚠️ 본 계산 결과는 이해를 돕기 위한 <strong>참고용 추정치</strong>입니다. 개인별 세부 요건(취득 시기, 지역 규제 이력, 감면 특례 등)에 따라 실제 세액은 달라질 수 있으며, 중과세 유예 등 세법 개정 사항은 반드시 확인이 필요합니다. 실제 매도 전에는 세무 전문가와 상담하시기 바랍니다.
+      </div>
+    </div>
+  </section>
+
+  <section id="guide">
+    <span class="section-label">Guide</span>
+    <h2>절세 가이드</h2>
+    <p class="sub">실제 매도 과정에서 부딪히는 이슈들을 정리했습니다</p>
+    <div class="guide-grid">
+      <a class="guide-card" href="guide01-bigwase-12eok.html">
+        <div class="num">GUIDE 01</div>
+        <h3>1세대 1주택 비과세, 12억의 진실</h3>
+        <p>비과세 요건 2가지와 12억 초과분 안분 계산 방식, 고가주택도 세금이 생각보다 적은 이유.</p>
+      </a>
+      <a class="guide-card" href="guide02-sedae-bunri.html">
+        <div class="num">GUIDE 02</div>
+        <h3>세대분리, 언제까지 해야 인정될까</h3>
+        <p>양도일 기준 판정 원칙, 30세 미만 자녀의 소득 요건, 실무에서 자주 깨지는 케이스.</p>
+      </a>
+      <a class="guide-card" href="guide03-sangsaeng-imdae.html">
+        <div class="num">GUIDE 03</div>
+        <h3>상생임대인 제도로 거주요건 채우기</h3>
+        <p>5% 이내 인상 계약의 요건, 직전 계약 1년 6개월 + 상생 계약 2년 유지 조건 총정리.</p>
+      </a>
+      <a class="guide-card" href="guide04-jangteukgong-80.html">
+        <div class="num">GUIDE 04</div>
+        <h3>장기보유특별공제 최대 80% 받는 법</h3>
+        <p>보유 4% + 거주 4%의 구조, 거주 없이 보유만 하면 절반도 못 받는 이유.</p>
+      </a>
+      <a class="guide-card" href="guide05-sangsok-jeungyeo.html">
+        <div class="num">GUIDE 05</div>
+        <h3>상속·증여받은 집, 취득가액은 얼마일까</h3>
+        <p>상속·증여 당시 평가액이 취득가액이 되는 원리, 감정평가를 미리 받아두면 유리한 이유.</p>
+      </a>
+      <a class="guide-card" href="guide06-hwansan-chwidcuk.html">
+        <div class="num">GUIDE 06</div>
+        <h3>옛날에 산 집, 취득가액을 모른다면</h3>
+        <p>환산취득가액 계산 구조와 가산세 5% 함정, 실거래 증빙을 찾는 법.</p>
+      </a>
+      <a class="guide-card" href="guide07-hapsan-gwase.html">
+        <div class="num">GUIDE 07</div>
+        <h3>같은 해에 2건 팔면 세금이 늘어난다</h3>
+        <p>양도소득 합산과세의 구조, 연도를 나눠 파는 것만으로 세금이 줄어드는 이유.</p>
+      </a>
+      <a class="guide-card" href="guide08-gongdong-myeongui.html">
+        <div class="num">GUIDE 08</div>
+        <h3>공동명의 절세와 이월과세 10년의 함정</h3>
+        <p>인별 과세의 절세 효과, 매도 직전 배우자 증여가 통하지 않는 이유(이월과세).</p>
+      </a>
+      <a class="guide-card" href="guide09-honin-bongyang.html">
+        <div class="num">GUIDE 09</div>
+        <h3>혼인·부모 봉양으로 2주택이 됐다면</h3>
+        <p>혼인합가 10년·동거봉양 10년 특례, 먼저 파는 집이 비과세되는 조건.</p>
+      </a>
+      <a class="guide-card" href="guide10-bunyanggwon-ipjugwon.html">
+        <div class="num">GUIDE 10</div>
+        <h3>분양권·입주권, 주택과 뭐가 다른가</h3>
+        <p>분양권 60~70% 단일세율, 입주권의 주택 수 포함 여부, 완공 후 매도 전략.</p>
+      </a>
+    </div>
+  </section>
+
+  <section id="game">
+    <span class="section-label">Break Time</span>
+    <h2>쉬어가기 — 반응속도 테스트</h2>
+    <p class="sub">세금 계산에 지친 뇌를 잠시 리셋하세요. 화면이 주황색이 되는 순간 클릭!</p>
+    <div class="game-box">
+      <div id="gameArea" onclick="gameClick()">클릭해서 시작</div>
+      <div class="game-stats">
+        최근 기록: <span id="lastTime">-</span> &nbsp;|&nbsp; 최고 기록: <span id="bestTime">-</span>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+<footer>
+  <div class="wrap">
+    절세랩 © 2026 · 본 사이트의 모든 계산 결과는 참고용이며 법적 효력이 없습니다 · 문의: contact@jeolselab.com
+  </div>
+</footer>
+
+<script>
+// ---------- 유틸 ----------
+function num(id) {
+  const v = document.getElementById(id).value.replace(/[^0-9]/g, '');
+  return v ? parseInt(v, 10) : 0;
+}
+function fmtMan(man) { // 만원 → 한글 표기
+  if (man >= 10000) {
+    const eok = Math.floor(man / 10000);
+    const rest = Math.round(man % 10000);
+    return rest > 0 ? `${eok}억 ${rest.toLocaleString()}만원` : `${eok}억원`;
+  }
+  return `${Math.round(man).toLocaleString()}만원`;
+}
+// 입력 콤마 자동
+['salePrice','buyPrice','expense','otherGain'].forEach(id => {
+  document.getElementById(id).addEventListener('input', e => {
+    const raw = e.target.value.replace(/[^0-9]/g, '');
+    e.target.value = raw ? parseInt(raw,10).toLocaleString() : '';
+  });
+});
+
+// ---------- 세금 계산 (단위: 만원) ----------
+const BRACKETS = [ // [과세표준 상한(만원), 세율, 누진공제(만원)]
+  [1400, 0.06, 0], [5000, 0.15, 126], [8800, 0.24, 576],
+  [15000, 0.35, 1544], [30000, 0.38, 1994], [50000, 0.40, 2594],
+  [100000, 0.42, 3594], [Infinity, 0.45, 6594]
+];
+
+function basicTax(base, surcharge = 0) {
+  if (base <= 0) return 0;
+  for (const [limit, rate, deduct] of BRACKETS) {
+    if (base <= limit) return base * (rate + surcharge) - deduct;
+  }
+}
+
+// 합산과세: 같은 해 기존 양도소득이 있으면 그 위 구간부터 세율 적용
+function marginalTax(base, other, surcharge) {
+  if (other > 0) return basicTax(base + other, surcharge) - basicTax(other, surcharge);
+  return basicTax(base, surcharge);
+}
+
+// 인별 산출세액 (base: 과세표준, 만원)
+function personTax(base, opt) {
+  if (base <= 0) return 0;
+  const a = opt.assetType;
+  if (a === 'presale') { // 분양권: 1년 미만 70%, 이후 60% (보유기간 무관)
+    return base * (opt.hold < 1 ? 0.70 : 0.60);
+  }
+  if (a === 'house' || a === 'right') { // 주택·입주권
+    if (opt.hold < 1) return base * 0.70;
+    if (opt.hold < 2) return base * 0.60;
+    let s = 0;
+    if (a === 'house' && opt.heavy && opt.adjusted) { // 다주택 중과 (유예 종료 가정 시)
+      if (opt.houses === '2') s = 0.20;
+      if (opt.houses === '3') s = 0.30;
+    }
+    return marginalTax(base, opt.other, s);
+  }
+  // 토지·상가
+  if (opt.hold < 1) return base * 0.50;
+  if (opt.hold < 2) return base * 0.40;
+  return marginalTax(base, opt.other, a === 'landIdle' ? 0.10 : 0); // 비사업용 +10%p
+}
+
+function computeTax(opt) {
+  // opt: assetType, joint, sale, buy, exp, hold, live, houses, adjusted, sangsaeng, heavy, other
+  const gain = opt.sale - opt.buy - opt.exp;
+  if (gain <= 0) return { total: 0, steps: { gain, taxable: 0, ltDeduct: 0, base: 0 }, exempt: false };
+
+  const isHouse = opt.assetType === 'house';
+  const isOneHouse = isHouse && (opt.houses === '1' || opt.houses === 'temp2');
+  // 거주요건: 조정대상지역 취득 시 2년 거주 필요 (상생임대 충족 시 면제)
+  const liveOk = !opt.adjusted || opt.live >= 2 || opt.sangsaeng;
+  const exemptOk = isOneHouse && opt.hold >= 2 && liveOk;
+
+  // 1세대1주택 비과세 + 12억 이하 → 세금 0
+  if (exemptOk && opt.sale <= 120000) {
+    return { total: 0, steps: { gain, taxable: 0, ltDeduct: 0, base: 0 }, exempt: true };
+  }
+
+  let taxable = gain;
+  if (exemptOk && opt.sale > 120000) {
+    taxable = gain * (opt.sale - 120000) / opt.sale; // 12억 초과분 안분
+  }
+
+  // 장기보유특별공제 (분양권은 미적용)
+  let ltRate = 0;
+  if (opt.assetType !== 'presale' && opt.hold >= 3) {
+    if (isHouse && exemptOk && opt.live >= 2) {
+      // 1주택 우대(표2): 보유 4%/년 + 거주 4%/년, 각 최대 40% — 거주 2년 이상일 때만
+      ltRate = Math.min(opt.hold * 0.04, 0.4) + Math.min(opt.live * 0.04, 0.4);
+    } else {
+      ltRate = Math.min(opt.hold * 0.02, 0.3); // 일반(표1) 2%/년, 최대 30%
+    }
+  }
+  const ltDeduct = taxable * ltRate;
+  const income = taxable - ltDeduct; // 양도소득금액
+
+  // 명의별 계산 (공동명의는 50:50 인별 과세, 기본공제 250만 각각)
+  const persons = opt.joint ? 2 : 1;
+  const otherEach = (opt.other || 0) / persons;
+  let tax = 0, baseSum = 0;
+  for (let i = 0; i < persons; i++) {
+    const deduct = otherEach > 0 ? 0 : 250; // 기본공제는 연 1회 — 올해 양도분이 있으면 이미 사용으로 간주
+    let base = income / persons - deduct;
+    if (base < 0) base = 0;
+    baseSum += base;
+    tax += personTax(base, { ...opt, other: otherEach });
+  }
+
+  return { total: tax * 1.1, steps: { gain, taxable, ltDeduct, base: baseSum }, exempt: exemptOk };
+}
+
+function toggleFields() {
+  const a = document.getElementById('assetType').value;
+  const isHouse = a === 'house';
+  document.getElementById('fHouseCount').style.display = isHouse ? '' : 'none';
+  document.getElementById('fLive').style.display = isHouse ? '' : 'none';
+  document.getElementById('fChecks').style.display = isHouse ? '' : 'none';
+}
+
+function calculate() {
+  const opt = {
+    assetType: document.getElementById('assetType').value,
+    joint: document.getElementById('ownership').value === 'joint',
+    sale: num('salePrice'), buy: num('buyPrice'), exp: num('expense'),
+    other: num('otherGain'),
+    hold: parseFloat(document.getElementById('holdYears').value) || 0,
+    live: parseFloat(document.getElementById('liveYears').value) || 0,
+    houses: document.getElementById('houseCount').value,
+    adjusted: document.getElementById('adjusted').checked,
+    sangsaeng: document.getElementById('sangsaeng').checked,
+    heavy: document.getElementById('heavyTax').checked,
+  };
+  if (!opt.sale || !opt.buy) { alert('양도가액과 취득가액을 입력해주세요.'); return; }
+
+  const now = computeTax(opt);
+
+  // 결과 표시
+  document.getElementById('result').style.display = 'block';
+  document.getElementById('mainAmount').textContent = now.total <= 0 ? '0원 (비과세)' : fmtMan(now.total);
+  const s = now.steps;
+  document.getElementById('detailRows').innerHTML = `
+    <div><span>양도차익</span><strong>${fmtMan(s.gain)}</strong></div>
+    <div><span>과세대상 양도차익${now.exempt && opt.sale > 120000 ? ' (12억 초과분 안분)' : ''}</span><strong>${fmtMan(s.taxable)}</strong></div>
+    <div><span>장기보유특별공제</span><strong>-${fmtMan(s.ltDeduct)}</strong></div>
+    <div><span>과세표준 (기본공제 250만 차감)</span><strong>${fmtMan(s.base)}</strong></div>
+    <div><span>산출세액 + 지방소득세 10%</span><strong>${fmtMan(now.total)}</strong></div>`;
+
+  // 시나리오 비교
+  const scenarios = [];
+  scenarios.push({ name: '지금 조건 그대로', tax: now.total, desc: '입력하신 현재 조건 기준입니다.' });
+
+  const isHouse = opt.assetType === 'house';
+  const isOne = isHouse && (opt.houses === '1' || opt.houses === 'temp2');
+
+  // 주택 전용 시나리오
+  if (isOne && !now.exempt) {
+    const alt = computeTax({ ...opt, hold: Math.max(opt.hold, 2), live: Math.max(opt.live, 2) });
+    scenarios.push({ name: '2년 거주요건 충족 후 매도', tax: alt.total, desc: '전입해서 2년 거주 후 팔면 1세대 1주택 비과세가 적용됩니다.' });
+  }
+  if (isOne && opt.adjusted && opt.live < 2 && !opt.sangsaeng) {
+    const alt = computeTax({ ...opt, sangsaeng: true });
+    scenarios.push({ name: '상생임대차계약 활용', tax: alt.total, desc: '5% 이내 인상 상생임대 요건을 채우면 실거주 없이 거주요건이 면제됩니다.' });
+  }
+  if (isHouse && !isOne) {
+    const alt = computeTax({ ...opt, houses: '1' });
+    scenarios.push({ name: '1주택 상태로 만든 후 매도', tax: alt.total, desc: '세대분리·다른 주택 선매도 등으로 1세대 1주택이 되면 비과세·장특공 우대가 적용됩니다.' });
+  }
+  if (isOne && (opt.live < 10 || opt.hold < 10)) {
+    const alt = computeTax({ ...opt, hold: Math.max(opt.hold, 10), live: 10 });
+    scenarios.push({ name: '보유·거주 10년 채우기 (장특공 80%)', tax: alt.total, desc: '보유 40% + 거주 40%, 최대 80% 공제로 과세대상이 크게 줄어듭니다.' });
+  }
+  // 중과 적용 중이라면: 유예 기간 내 매도
+  if (isHouse && opt.heavy) {
+    const alt = computeTax({ ...opt, heavy: false });
+    scenarios.push({ name: '중과 유예 기간 내 매도', tax: alt.total, desc: '중과 유예가 유지되는 동안 매도하면 기본세율이 적용됩니다.' });
+  }
+  // 단기 보유: 2년 채우고 매도 (주택·입주권·토지)
+  if (opt.assetType !== 'presale' && opt.hold < 2) {
+    const alt = computeTax({ ...opt, hold: 2 });
+    scenarios.push({ name: '2년 보유 후 매도 (단기세율 회피)', tax: alt.total, desc: '보유 2년을 채우면 60~70% 단일세율 대신 기본세율이 적용됩니다.' });
+  }
+  // 공동명의 효과 (단독명의 + 누진세율 구간일 때)
+  if (!opt.joint && opt.hold >= 2 && opt.assetType !== 'presale') {
+    const alt = computeTax({ ...opt, joint: true });
+    if (alt.total < now.total) {
+      scenarios.push({ name: '부부 공동명의(50:50)였다면', tax: alt.total, desc: '인별 과세로 세율 구간이 낮아집니다. 단, 매도 직전 증여는 이월과세(10년)에 걸리므로 취득 시점부터 설계해야 합니다.' });
+    }
+  }
+
+  const minTax = Math.min(...scenarios.map(x => x.tax));
+  document.getElementById('scenarios').innerHTML = scenarios.map((sc) => {
+    const save = now.total - sc.tax;
+    const isBest = sc.tax === minTax && scenarios.length > 1 && sc.tax < now.total;
+    return `<div class="scenario${isBest ? ' best' : ''}">
+      ${isBest ? '<span class="tag">BEST</span>' : ''}
+      <h3>${sc.name}</h3>
+      <div class="s-amount">${sc.tax <= 0 ? '0원' : fmtMan(sc.tax)}</div>
+      ${save > 0 ? `<div class="s-save">▼ ${fmtMan(save)} 절세</div>` : ''}
+      <p>${sc.desc}</p>
+    </div>`;
+  }).join('');
+
+  document.getElementById('result').scrollIntoView({ behavior: 'smooth' });
+}
+
+// ---------- 반응속도 게임 ----------
+let gameState = 'idle'; // idle → waiting → go
+let gameTimer = null, goTime = 0, best = null;
+
+function gameClick() {
+  const area = document.getElementById('gameArea');
+  if (gameState === 'idle') {
+    gameState = 'waiting';
+    area.className = 'waiting';
+    area.textContent = '주황색이 되면 클릭하세요...';
+    gameTimer = setTimeout(() => {
+      gameState = 'go';
+      area.className = 'go';
+      area.textContent = '지금 클릭!';
+      goTime = performance.now();
+    }, 1200 + Math.random() * 2500);
+  } else if (gameState === 'waiting') {
+    clearTimeout(gameTimer);
+    gameState = 'idle';
+    area.className = '';
+    area.textContent = '너무 빨랐어요! 다시 클릭해서 시작';
+  } else if (gameState === 'go') {
+    const ms = Math.round(performance.now() - goTime);
+    gameState = 'idle';
+    area.className = '';
+    area.textContent = `${ms}ms! 다시 도전하려면 클릭`;
+    document.getElementById('lastTime').textContent = ms + 'ms';
+    if (best === null || ms < best) {
+      best = ms;
+      document.getElementById('bestTime').textContent = ms + 'ms';
+    }
+  }
+}
+</script>
+</body>
+</html>

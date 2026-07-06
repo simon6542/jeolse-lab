@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>옛날에 산 집, 취득가액을 모른다면 — 환산취득가액 | 절세랩</title>
+<meta name="description" content="취득 계약서가 없을 때 쓰는 환산취득가액의 계산 구조와 감정가액·환산가액 신고 시 5% 가산세 함정을 설명합니다.">
+<style>
+  :root { --ink: #111111; --paper: #ffffff; --accent: #ff4d00; --gray: #f4f4f4; --mid: #757575; --line: #e0e0e0; }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, "Pretendard", "Noto Sans KR", sans-serif; color: var(--ink); background: var(--paper); line-height: 1.75; }
+  .wrap { max-width: 760px; margin: 0 auto; padding: 0 20px; }
+  header { border-bottom: 2px solid var(--ink); }
+  .nav { display: flex; justify-content: space-between; align-items: center; padding: 18px 0; }
+  .logo { font-size: 22px; font-weight: 900; letter-spacing: -0.5px; color: var(--ink); text-decoration: none; }
+  .logo span { color: var(--accent); }
+  .nav a { color: var(--ink); text-decoration: none; font-weight: 700; font-size: 14px; margin-left: 20px; }
+  .label { display: inline-block; background: var(--ink); color: #fff; font-size: 12px; font-weight: 800; letter-spacing: 1.5px; padding: 6px 12px; margin: 48px 0 20px; }
+  h1 { font-size: clamp(28px, 5vw, 42px); font-weight: 900; letter-spacing: -1.5px; line-height: 1.2; margin-bottom: 40px; }
+  article h2 { font-size: 22px; font-weight: 900; letter-spacing: -0.5px; margin: 40px 0 14px; padding-top: 8px; border-top: 2px solid var(--ink); }
+  article p { margin-bottom: 16px; font-size: 16px; }
+  article ul { margin: 0 0 16px 22px; }
+  article li { margin-bottom: 8px; font-size: 16px; }
+  article strong { font-weight: 800; }
+  article a { color: var(--accent); font-weight: 700; }
+  article table { width: 100%; border-collapse: collapse; margin: 0 0 16px; font-size: 14px; }
+  article th, article td { border: 2px solid var(--ink); padding: 10px 12px; text-align: left; }
+  article th { background: var(--ink); color: #fff; font-weight: 800; }
+  .formula { background: var(--gray); border-left: 4px solid var(--accent); padding: 14px 16px; font-weight: 800; font-size: 15px; }
+  .cta { margin: 48px 0; background: var(--ink); color: #fff; padding: 28px 24px; }
+  .cta h3 { font-size: 20px; font-weight: 900; margin-bottom: 6px; }
+  .cta p { font-size: 14px; opacity: .8; margin-bottom: 16px; }
+  .cta a { display: inline-block; background: var(--accent); color: #fff; text-decoration: none; font-weight: 900; padding: 12px 28px; font-size: 15px; }
+  .other { margin: 48px 0; }
+  .other h3 { font-size: 16px; font-weight: 900; margin-bottom: 12px; }
+  .other a { display: block; color: var(--ink); text-decoration: none; font-weight: 700; font-size: 14px; padding: 10px 0; border-bottom: 1px solid var(--line); }
+  .other a:hover { color: var(--accent); }
+  .disclaimer { margin: 32px 0; padding: 16px; background: var(--gray); font-size: 12px; color: var(--mid); border-left: 4px solid var(--accent); }
+  footer { border-top: 2px solid var(--ink); padding: 28px 0; margin-top: 48px; font-size: 13px; color: var(--mid); }
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap nav">
+    <a class="logo" href="index.html">절세<span>랩</span></a>
+    <nav>
+      <a href="index.html#calc">계산기</a>
+      <a href="index.html#guide">절세 가이드</a>
+    </nav>
+  </div>
+</header>
+<div class="wrap">
+  <span class="label">GUIDE 06</span>
+  <h1>옛날에 산 집, 취득가액을 모른다면 — 환산취득가액</h1>
+  <article>
+<p>수십 년 전에 산 집은 매매계약서가 남아 있지 않은 경우가 많습니다. 취득가액을 증빙하지 못하면 양도차익이 커져 세금 폭탄을 맞을 것 같지만, 세법은 이런 경우를 위해 <strong>환산취득가액</strong>이라는 장치를 두고 있습니다.</p>
+
+<h2>환산취득가액의 구조</h2>
+<p class="formula">환산취득가액 = 양도 당시 실거래가 × (취득 당시 기준시가 ÷ 양도 당시 기준시가)</p>
+<p>즉, 기준시가가 오른 비율만큼 실거래가를 거꾸로 내려서 취득가액을 추정하는 방식입니다. 예를 들어 10억에 팔았고 기준시가가 취득 당시 1억, 양도 당시 5억이라면 환산취득가액은 10억 × (1/5) = <strong>2억</strong>이 됩니다.</p>
+
+<h2>먼저 증빙을 찾아보자</h2>
+<p>환산은 어디까지나 차선책입니다. 실제 취득가액이 환산가액보다 높다면 증빙을 찾는 것이 유리합니다.</p>
+<ul>
+<li><strong>등기부등본·구청 검인계약서</strong> — 1990년대 이후 거래라면 검인 기록이 남아 있을 수 있습니다</li>
+<li><strong>당시 은행 대출 서류, 자금 이체 기록</strong></li>
+<li>2006년 이후 거래는 <strong>실거래가 신고 자료</strong>가 국토부에 남아 있습니다</li>
+</ul>
+
+<h2>가산세 5% 함정</h2>
+<p>주의할 점이 있습니다. <strong>건물을 신축(또는 증축)하고 5년 이내에 양도</strong>하면서 환산취득가액이나 감정가액으로 신고하면, 그 가액의 <strong>5%가 가산세</strong>로 부과됩니다. 재건축·신축 주택 소유자가 무심코 환산 신고를 했다가 수천만 원의 가산세를 무는 사례가 있으니, 신축 후 5년 이내 매도라면 반드시 실제 취득가액(공사비 증빙)을 준비해야 합니다.</p>
+
+<h2>실무 판단 순서</h2>
+<ul>
+<li>① 실제 계약서·증빙 수집 시도 → ② 실제 취득가액 vs 환산취득가액 비교 → ③ 큰 쪽으로 신고 (증빙이 있는 경우에 한함)</li>
+<li>필요경비도 다릅니다. 실제 취득가액 신고 시 자본적지출(수리비 등)을 실비로 공제하지만, 환산 신고 시에는 기준시가의 3%(개산공제)만 인정됩니다.</li>
+<li>어느 쪽이 유리한지는 <a href="index.html#calc">계산기</a>에 두 가지 취득가액을 넣어 비교해 보면 바로 확인됩니다.</li>
+</ul>
+  </article>
+  <div class="cta">
+    <h3>내 세금은 얼마일까?</h3>
+    <p>지금 조건과 절세 시나리오별 세금을 30초 만에 비교해 보세요.</p>
+    <a href="index.html#calc">양도세 계산기 열기 →</a>
+  </div>
+  <div class="other">
+    <h3>다른 가이드</h3>
+    <a href="guide01-bigwase-12eok.html">GUIDE 01 — 1세대 1주택 비과세, 12억의 진실</a>
+    <a href="guide02-sedae-bunri.html">GUIDE 02 — 세대분리, 언제까지 해야 인정될까</a>
+    <a href="guide03-sangsaeng-imdae.html">GUIDE 03 — 상생임대인 제도로 거주요건 채우기</a>
+    <a href="guide04-jangteukgong-80.html">GUIDE 04 — 장기보유특별공제 최대 80% 받는 법</a>
+    <a href="guide05-sangsok-jeungyeo.html">GUIDE 05 — 상속·증여받은 집, 취득가액은 얼마일까</a>
+    <a href="guide07-hapsan-gwase.html">GUIDE 07 — 같은 해에 2건 팔면 세금이 늘어난다 — 합산과세</a>
+    <a href="guide08-gongdong-myeongui.html">GUIDE 08 — 공동명의 절세와 이월과세 10년의 함정</a>
+    <a href="guide09-honin-bongyang.html">GUIDE 09 — 혼인·부모 봉양으로 2주택이 됐다면</a>
+    <a href="guide10-bunyanggwon-ipjugwon.html">GUIDE 10 — 분양권·입주권, 주택과 뭐가 다른가</a>
+  </div>
+  <div class="disclaimer">⚠️ 본 글은 일반적인 세법 정보를 다루며, 개인별 사실관계에 따라 결론이 달라질 수 있습니다. 실제 의사결정 전에는 반드시 세무 전문가와 상담하시기 바랍니다. 세법 개정에 따라 내용이 달라질 수 있습니다.</div>
+</div>
+<footer><div class="wrap">절세랩 © 2026 · 본 사이트의 모든 내용은 참고용이며 법적 효력이 없습니다</div></footer>
+</body>
+</html>
