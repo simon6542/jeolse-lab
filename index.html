@@ -328,10 +328,10 @@
 
   <section id="next-lab">
     <span class="section-label">Next Lab</span>
-    <h2>다음 무료 도구를 준비하고 있습니다</h2>
-    <p class="sub">새 세금·계산 도구가 나오면 이메일로 한 번만 알려드립니다. 스팸 없음, 출시 알림 1회뿐입니다.</p>
+    <h2>다음 도구 — 대출 갈아타기 손익 계산기</h2>
+    <p class="sub">"수수료 내고도 이득인가?" 실행일 하나로 구약정/신약정 수수료 자동 판정, 부대비용 합산, 몇 개월 뒤 본전인지까지. <a href="https://simon6542.github.io/loan-lab/" style="color:var(--accent);font-weight:800">자세히 보기 →</a></p>
     <form action="https://formsubmit.co/simon6542@gmail.com" method="POST" style="border:2px solid var(--ink);padding:28px;display:flex;flex-direction:column;gap:12px;max-width:520px">
-      <input type="hidden" name="_subject" value="[절세랩] 다음 도구 알림 신청">
+      <input type="hidden" name="_subject" value="[대출랩 사전예약] via 절세랩">
       <input type="hidden" name="_captcha" value="false">
       <input type="hidden" name="_next" value="https://simon6542.github.io/jeolse-lab/?subscribed=1">
       <input type="hidden" name="site" value="jeolse-lab">
@@ -588,6 +588,15 @@ function gameClick() {
       best = ms;
       document.getElementById('bestTime').textContent = ms + 'ms';
     }
+  }
+}
+</script>
+<script>
+if (new URLSearchParams(location.search).get('subscribed') === '1') {
+  var f = document.querySelector('#next-lab form');
+  if (f) {
+    f.outerHTML = '<div style="border:2px solid var(--accent);padding:20px 24px;font-weight:800;max-width:520px">\u2713 \uc2e0\uccad \uc644\ub8cc! \ucd9c\uc2dc\ub418\uba74 \uc774\uba54\uc77c\ub85c \ud55c \ubc88\ub9cc \uc54c\ub824\ub4dc\ub9bd\ub2c8\ub2e4.</div>';
+    document.getElementById('next-lab').scrollIntoView();
   }
 }
 </script>
