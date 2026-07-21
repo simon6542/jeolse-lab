@@ -245,9 +245,17 @@
           <option value="3">3주택 이상</option>
         </select>
       </div>
+      <div class="field" id="fRightOnly" style="display:none">
+        <div class="check-row">
+          <input type="checkbox" id="rightOnly">
+          <label for="rightOnly">입주권 1개만 보유 (다른 주택·분양권 없음)</label>
+        </div>
+        <div class="hint">비과세 판정용 — 관리처분계획 인가일 현재 기존주택이 1세대1주택 요건(보유 2년, 취득 당시 조정대상지역이면 거주 2년)을 갖췄고, 양도일 현재 다른 주택·분양권이 없으면 12억 이하까지 비과세됩니다 (소득세법 제89조 제1항 제4호)</div>
+      </div>
       <div class="field">
         <label for="holdYears">보유 기간 (년)</label>
         <input type="number" id="holdYears" min="0" max="50" placeholder="예: 8">
+        <div class="hint" id="holdHint" style="display:none">조합원입주권은 <strong>취득일부터 관리처분계획 인가일까지</strong>의 기간을 입력하세요</div>
       </div>
       <div class="field" id="fLive">
         <label for="liveYears">거주 기간 (년)</label>
@@ -511,7 +519,9 @@ function computeTax(opt) {
   if (gain <= 0) return { total: 0, steps: { gain, taxable: 0, ltDeduct: 0, base: 0 }, exempt: false };
 
   const isHouse = opt.assetType === 'house';
-  const isOneHouse = isHouse && (opt.houses === '1' || opt.houses === 'temp2');
+  const isRight = opt.assetType === 'right';
+  // 입주권 1개만 보유(다른 주택·분양권 없음)하면 주택과 같이 1세대1주택 비과세 대상 — 소득세법 §89①4
+  const isOneHouse = (isHouse && (opt.houses === '1' || opt.houses === 'temp2')) || (isRight && opt.rightOnly);
   // 거주요건: 조정대상지역 취득 시 2년 거주 필요 (상생임대 충족 시 면제)
   const liveOk = !opt.adjusted || opt.live >= 2 || opt.sangsaeng;
   const exemptOk = isOneHouse && opt.hold >= 2 && liveOk;
@@ -532,7 +542,7 @@ function computeTax(opt) {
   // 장기보유특별공제 (분양권은 미적용 / 중과 대상은 배제 — 소득세법 §95②)
   let ltRate = 0;
   if (opt.assetType !== 'presale' && opt.hold >= 3 && !heavyApplies) {
-    if (isHouse && exemptOk && opt.live >= 2) {
+    if ((isHouse || isRight) && exemptOk && opt.live >= 2) {
       // 1주택 우대(표2): 보유 4%/년 + 거주 4%/년, 각 최대 40% — 거주 2년 이상일 때만
       ltRate = Math.min(opt.hold * 0.04, 0.4) + Math.min(opt.live * 0.04, 0.4);
     } else {
@@ -560,9 +570,13 @@ function computeTax(opt) {
 function toggleFields() {
   const a = document.getElementById('assetType').value;
   const isHouse = a === 'house';
+  const isRight = a === 'right';
+  // 입주권도 1세대1주택 비과세 대상이라 거주기간·조정지역 입력이 필요하다
   document.getElementById('fHouseCount').style.display = isHouse ? '' : 'none';
-  document.getElementById('fLive').style.display = isHouse ? '' : 'none';
-  document.getElementById('fChecks').style.display = isHouse ? '' : 'none';
+  document.getElementById('fRightOnly').style.display = isRight ? '' : 'none';
+  document.getElementById('fLive').style.display = (isHouse || isRight) ? '' : 'none';
+  document.getElementById('fChecks').style.display = (isHouse || isRight) ? '' : 'none';
+  document.getElementById('holdHint').style.display = isRight ? '' : 'none';
 }
 
 
@@ -589,6 +603,7 @@ function calculate() {
     hold: parseFloat(document.getElementById('holdYears').value) || 0,
     live: parseFloat(document.getElementById('liveYears').value) || 0,
     houses: document.getElementById('houseCount').value,
+    rightOnly: document.getElementById('rightOnly').checked,
     adjusted: document.getElementById('adjusted').checked,
     adjustedNow: document.getElementById('adjustedNow').checked,
     sangsaeng: document.getElementById('sangsaeng').checked,
@@ -614,7 +629,8 @@ function calculate() {
   scenarios.push({ name: '지금 조건 그대로', tax: now.total, desc: '입력하신 현재 조건 기준입니다.' });
 
   const isHouse = opt.assetType === 'house';
-  const isOne = isHouse && (opt.houses === '1' || opt.houses === 'temp2');
+  const isOne = (isHouse && (opt.houses === '1' || opt.houses === 'temp2'))
+             || (opt.assetType === 'right' && opt.rightOnly);
 
   // 주택 전용 시나리오
   if (isOne && !now.exempt) {
