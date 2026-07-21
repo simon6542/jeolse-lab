@@ -262,17 +262,22 @@
       <div class="field" id="fChecks">
         <div class="check-row">
           <input type="checkbox" id="adjusted">
-          <label for="adjusted">조정대상지역 (취득 당시)</label>
+          <label for="adjusted">취득 당시 조정대상지역이었다</label>
         </div>
-        <div class="check-row">
+        <div class="hint">거주요건 판정용 — 살 때 조정대상지역이었으면 2년 거주해야 비과세를 받습니다</div>
+        <div class="check-row" style="margin-top:10px">
+          <input type="checkbox" id="adjustedNow">
+          <label for="adjustedNow">지금도 조정대상지역이다</label>
+        </div>
+        <div class="hint">다주택 중과 판정용 — <strong>2025년 10월 16일부로 서울 25개 자치구 전역</strong>과 경기 과천·광명·성남(분당·수정·중원)·수원(영통·장안·팔달)·안양 동안·용인 수지·의왕·하남 등이 지정돼 있습니다</div>
+        <div class="check-row" style="margin-top:10px">
           <input type="checkbox" id="sangsaeng">
           <label for="sangsaeng">상생임대차계약 체결·유지</label>
         </div>
-        <div class="check-row">
-          <input type="checkbox" id="heavyTax">
-          <label for="heavyTax">다주택 중과 적용하여 계산</label>
+        <div class="hint" style="margin-top:14px;border-left:4px solid var(--accent);padding:10px 12px;background:var(--gray)">
+          🔴 <strong>다주택 중과 유예는 2026년 5월 9일자로 종료됐습니다.</strong> 현재 조정대상지역 2주택은 기본세율 +20%p, 3주택 이상은 +30%p가 붙고 <strong>장기보유특별공제도 받지 못합니다.</strong> 위 두 항목을 체크하면 자동 반영됩니다.<br>
+          단 2026년 5월 9일까지 계약을 마친 건은 경과조치로 유예가 유지됩니다(강남·서초·송파·용산은 계약일로부터 4개월, 2025년 10월 16일 신규 지정 지역은 6개월 내 양도). 해당된다면 "현재 조정대상지역"을 체크하지 마세요.
         </div>
-        <div class="hint">다주택 중과는 한시 유예가 반복 연장되어 왔습니다. 매도 시점의 유예 여부를 꼭 확인하세요.</div>
       </div>
     </div>
 
@@ -291,7 +296,7 @@
       <div class="scenario-grid" id="scenarios"></div>
 
       <div class="disclaimer">
-        ⚠️ 본 계산 결과는 이해를 돕기 위한 <strong>참고용 추정치</strong>입니다. 개인별 세부 요건(취득 시기, 지역 규제 이력, 감면 특례 등)에 따라 실제 세액은 달라질 수 있으며, 중과세 유예 등 세법 개정 사항은 반드시 확인이 필요합니다. 실제 매도 전에는 세무 전문가와 상담하시기 바랍니다.
+        ⚠️ 본 계산 결과는 이해를 돕기 위한 <strong>참고용 추정치</strong>입니다. 개인별 세부 요건(취득 시기, 지역 규제 이력, 감면 특례 등)에 따라 실제 세액은 달라질 수 있습니다. 세율·공제는 2026년 7월 기준이며 <strong>다주택 중과 유예 종료(2026년 5월 9일)를 반영</strong>했습니다. 세법은 자주 바뀌므로 매도 시점의 규정을 반드시 확인하시고, 실제 의사결정 전에는 세무사 등 자격을 갖춘 전문가와 상담하시기 바랍니다. 본 사이트는 세무 자문을 제공하지 않습니다.
       </div>
 
       <div class="waitlist" id="waitlist">
@@ -479,13 +484,14 @@ function personTax(base, opt) {
     return base * (opt.hold < 1 ? 0.70 : 0.60);
   }
   if (a === 'house' || a === 'right') { // 주택·입주권
-    if (opt.hold < 1) return base * 0.70;
-    if (opt.hold < 2) return base * 0.60;
     let s = 0;
-    if (a === 'house' && opt.heavy && opt.adjusted) { // 다주택 중과 (유예 종료 가정 시)
+    if (a === 'house' && opt.heavyApplies) { // 다주택 중과 (2026.5.9 유예 종료)
       if (opt.houses === '2') s = 0.20;
       if (opt.houses === '3') s = 0.30;
     }
+    // 단기세율과 중과 누진세율이 겹치면 산출세액이 큰 쪽 — 비교과세(소득세법 §104⑤)
+    if (opt.hold < 1) return Math.max(base * 0.70, s ? marginalTax(base, opt.other, s) : 0);
+    if (opt.hold < 2) return Math.max(base * 0.60, s ? marginalTax(base, opt.other, s) : 0);
     return marginalTax(base, opt.other, s);
   }
   // 토지·상가
@@ -515,9 +521,12 @@ function computeTax(opt) {
     taxable = gain * (opt.sale - 120000) / opt.sale; // 12억 초과분 안분
   }
 
-  // 장기보유특별공제 (분양권은 미적용)
+  // 다주택 중과 판정 — 2026.5.9 유예 종료. 양도 시점 조정대상지역 + 2주택 이상
+  const heavyApplies = isHouse && opt.adjustedNow && (opt.houses === '2' || opt.houses === '3');
+
+  // 장기보유특별공제 (분양권은 미적용 / 중과 대상은 배제 — 소득세법 §95②)
   let ltRate = 0;
-  if (opt.assetType !== 'presale' && opt.hold >= 3) {
+  if (opt.assetType !== 'presale' && opt.hold >= 3 && !heavyApplies) {
     if (isHouse && exemptOk && opt.live >= 2) {
       // 1주택 우대(표2): 보유 4%/년 + 거주 4%/년, 각 최대 40% — 거주 2년 이상일 때만
       ltRate = Math.min(opt.hold * 0.04, 0.4) + Math.min(opt.live * 0.04, 0.4);
@@ -537,10 +546,10 @@ function computeTax(opt) {
     let base = income / persons - deduct;
     if (base < 0) base = 0;
     baseSum += base;
-    tax += personTax(base, { ...opt, other: otherEach });
+    tax += personTax(base, { ...opt, other: otherEach, heavyApplies });
   }
 
-  return { total: tax * 1.1, steps: { gain, taxable, ltDeduct, base: baseSum }, exempt: exemptOk };
+  return { total: tax * 1.1, steps: { gain, taxable, ltDeduct, base: baseSum }, exempt: exemptOk, heavy: heavyApplies };
 }
 
 function toggleFields() {
@@ -576,8 +585,8 @@ function calculate() {
     live: parseFloat(document.getElementById('liveYears').value) || 0,
     houses: document.getElementById('houseCount').value,
     adjusted: document.getElementById('adjusted').checked,
+    adjustedNow: document.getElementById('adjustedNow').checked,
     sangsaeng: document.getElementById('sangsaeng').checked,
-    heavy: document.getElementById('heavyTax').checked,
   };
   if (!opt.sale || !opt.buy) { alert('양도가액과 취득가액을 입력해주세요.'); return; }
 
@@ -590,7 +599,8 @@ function calculate() {
   document.getElementById('detailRows').innerHTML = `
     <div><span>양도차익</span><strong>${fmtMan(s.gain)}</strong></div>
     <div><span>과세대상 양도차익${now.exempt && opt.sale > 120000 ? ' (12억 초과분 안분)' : ''}</span><strong>${fmtMan(s.taxable)}</strong></div>
-    <div><span>장기보유특별공제</span><strong>-${fmtMan(s.ltDeduct)}</strong></div>
+    <div><span>장기보유특별공제${now.heavy ? ' <em style="color:#ff4d00;font-style:normal">— 중과 대상이라 배제</em>' : ''}</span><strong>-${fmtMan(s.ltDeduct)}</strong></div>
+    ${now.heavy ? `<div><span>다주택 중과</span><strong style="color:#ff4d00">기본세율 +${opt.houses === '3' ? '30' : '20'}%p</strong></div>` : ''}
     <div><span>과세표준 (기본공제 250만 차감)</span><strong>${fmtMan(s.base)}</strong></div>
     <div><span>산출세액 + 지방소득세 10%</span><strong>${fmtMan(now.total)}</strong></div>`;
 
@@ -618,11 +628,8 @@ function calculate() {
     const alt = computeTax({ ...opt, hold: Math.max(opt.hold, 10), live: 10 });
     scenarios.push({ name: '보유·거주 10년 채우기 (장특공 80%)', tax: alt.total, desc: '보유 40% + 거주 40%, 최대 80% 공제로 과세대상이 크게 줄어듭니다.' });
   }
-  // 중과 적용 중이라면: 유예 기간 내 매도
-  if (isHouse && opt.heavy) {
-    const alt = computeTax({ ...opt, heavy: false });
-    scenarios.push({ name: '중과 유예 기간 내 매도', tax: alt.total, desc: '중과 유예가 유지되는 동안 매도하면 기본세율이 적용됩니다.' });
-  }
+  // 중과 대상이면 1주택으로 줄이는 것이 유일한 정공법 (위 '1주택 상태로 만든 후 매도'가 이미 커버)
+  // 2026.5.9 유예 종료로 '유예 기간 내 매도'는 더 이상 선택지가 아니므로 시나리오에서 제외함
   // 단기 보유: 2년 채우고 매도 (주택·입주권·토지)
   if (opt.assetType !== 'presale' && opt.hold < 2) {
     const alt = computeTax({ ...opt, hold: 2 });
@@ -653,6 +660,7 @@ function calculate() {
     gtag('event', 'calc_complete', {
       asset_type: opt.assetType,
       house_count: opt.houses,
+      heavy: now.heavy ? 'applied' : 'none',
       tax_band: now.total <= 0 ? 'exempt'
         : now.total < 1000 ? 'under_1000man'
         : now.total < 5000 ? '1000_5000man' : 'over_5000man'
