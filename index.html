@@ -251,6 +251,16 @@
           <label for="rightOnly">입주권 1개만 보유 (다른 주택·분양권 없음)</label>
         </div>
         <div class="hint">비과세 판정용 — 관리처분계획 인가일 현재 기존주택이 1세대1주택 요건(보유 2년, 취득 당시 조정대상지역이면 거주 2년)을 갖췄고, 양도일 현재 다른 주택·분양권이 없으면 12억 이하까지 비과세됩니다 (소득세법 제89조 제1항 제4호)</div>
+        <div class="check-row" style="margin-top:10px">
+          <input type="checkbox" id="origMember">
+          <label for="origMember">조합에 기존 주택을 제공한 <strong>원조합원</strong>이다</label>
+        </div>
+        <div class="hint">장기보유특별공제 판정용 — 다른 조합원에게서 입주권을 <strong>사서 취득한 승계조합원</strong>은 공제가 아예 배제됩니다. 체크하지 않으면 공제 0%로 계산합니다 (소득세법 제95조 제2항 단서)</div>
+      </div>
+      <div class="field" id="fMgmtValue" style="display:none">
+        <label for="mgmtValue">관리처분계획인가일 당시 평가액</label>
+        <input type="text" id="mgmtValue" inputmode="numeric" placeholder="모르면 비워두세요">
+        <div class="hint">만원 단위 · 장기보유특별공제는 <strong>인가일까지의 양도차익</strong>에만 붙고, 인가 후 오른 프리미엄에는 붙지 않습니다. 비워두면 전액 인가 전 차익으로 계산하므로 <strong>공제가 실제보다 크게 잡힐 수 있습니다</strong></div>
       </div>
       <div class="field">
         <label for="holdYears">보유 기간 (년)</label>
@@ -541,8 +551,10 @@ function computeTax(opt) {
   const heavyApplies = isHouse && opt.adjustedNow && (opt.houses === '2' || opt.houses === '3');
 
   // 장기보유특별공제 (분양권은 미적용 / 중과 대상은 배제 — 소득세법 §95②)
+  // 승계조합원입주권은 공제 자체가 배제 — §95②는 대상을 원조합원으로 한정하고 "조합원으로부터 취득한 것"은 제외한다
+  const ltEligible = !isRight || !!opt.origMember;
   let ltRate = 0;
-  if (opt.assetType !== 'presale' && opt.hold >= 3 && !heavyApplies) {
+  if (opt.assetType !== 'presale' && opt.hold >= 3 && !heavyApplies && ltEligible) {
     if ((isHouse || isRight) && exemptOk && opt.live >= 2) {
       // 1주택 우대(표2): 보유 4%/년 + 거주 4%/년, 각 최대 40% — 거주 2년 이상일 때만
       ltRate = Math.min(opt.hold * 0.04, 0.4) + Math.min(opt.live * 0.04, 0.4);
@@ -550,7 +562,19 @@ function computeTax(opt) {
       ltRate = Math.min(opt.hold * 0.02, 0.3); // 일반(표1) 2%/년, 최대 30%
     }
   }
-  const ltDeduct = taxable * ltRate;
+
+  // 입주권 공제는 관리처분계획인가일까지의 양도차익에만 적용 — 인가 후 프리미엄 상승분은 공제 대상이 아니다
+  // 인가일 평가액을 안 받았으면 preRatio=1(전액 인가 전 차익)로 두되, 결과에 과대계상 가능성을 표시한다
+  let preRatio = 1, preUnknown = false;
+  if (isRight && ltRate > 0) {
+    if (opt.mgmt > 0) {
+      const preGain = opt.mgmt - opt.buy - opt.exp;
+      preRatio = Math.min(Math.max(preGain / gain, 0), 1);
+    } else {
+      preUnknown = true;
+    }
+  }
+  const ltDeduct = taxable * preRatio * ltRate;
   const income = taxable - ltDeduct; // 양도소득금액
 
   // 명의별 계산 (공동명의는 50:50 인별 과세, 기본공제 250만 각각)
@@ -565,7 +589,8 @@ function computeTax(opt) {
     tax += personTax(base, { ...opt, other: otherEach, heavyApplies });
   }
 
-  return { total: tax * 1.1, steps: { gain, taxable, ltDeduct, base: baseSum }, exempt: exemptOk, heavy: heavyApplies };
+  return { total: tax * 1.1, steps: { gain, taxable, ltDeduct, base: baseSum }, exempt: exemptOk, heavy: heavyApplies,
+           ltBlocked: isRight && !ltEligible && opt.hold >= 3 && !heavyApplies, preRatio, preUnknown };
 }
 
 function toggleFields() {
@@ -575,6 +600,7 @@ function toggleFields() {
   // 입주권도 1세대1주택 비과세 대상이라 거주기간·조정지역 입력이 필요하다
   document.getElementById('fHouseCount').style.display = isHouse ? '' : 'none';
   document.getElementById('fRightOnly').style.display = isRight ? '' : 'none';
+  document.getElementById('fMgmtValue').style.display = isRight ? '' : 'none';
   document.getElementById('fLive').style.display = (isHouse || isRight) ? '' : 'none';
   document.getElementById('fChecks').style.display = (isHouse || isRight) ? '' : 'none';
   document.getElementById('holdHint').style.display = isRight ? '' : 'none';
@@ -605,6 +631,8 @@ function calculate() {
     live: parseFloat(document.getElementById('liveYears').value) || 0,
     houses: document.getElementById('houseCount').value,
     rightOnly: document.getElementById('rightOnly').checked,
+    origMember: document.getElementById('origMember').checked,
+    mgmt: num('mgmtValue'),
     adjusted: document.getElementById('adjusted').checked,
     adjustedNow: document.getElementById('adjustedNow').checked,
     sangsaeng: document.getElementById('sangsaeng').checked,
@@ -620,7 +648,8 @@ function calculate() {
   document.getElementById('detailRows').innerHTML = `
     <div><span>양도차익</span><strong>${fmtMan(s.gain)}</strong></div>
     <div><span>과세대상 양도차익${now.exempt && opt.sale > 120000 ? ' (12억 초과분 안분)' : ''}</span><strong>${fmtMan(s.taxable)}</strong></div>
-    <div><span>장기보유특별공제${now.heavy ? ' <em style="color:#ff4d00;font-style:normal">— 중과 대상이라 배제</em>' : ''}</span><strong>-${fmtMan(s.ltDeduct)}</strong></div>
+    <div><span>장기보유특별공제${now.heavy ? ' <em style="color:#ff4d00;font-style:normal">— 중과 대상이라 배제</em>' : ''}${now.ltBlocked ? ' <em style="color:#ff4d00;font-style:normal">— 승계조합원입주권이라 배제</em>' : ''}${now.preRatio < 1 ? ` <em style="font-style:normal;opacity:.75">— 인가 전 차익 ${Math.round(now.preRatio * 100)}%에만 적용</em>` : ''}</span><strong>-${fmtMan(s.ltDeduct)}</strong></div>
+    ${now.preUnknown ? `<div><span style="color:#ff4d00">⚠ 인가일 평가액 미입력</span><strong style="color:#ff4d00;font-size:.9em">전액 인가 전 차익으로 계산 — 공제 과대 가능</strong></div>` : ''}
     ${now.heavy ? `<div><span>다주택 중과</span><strong style="color:#ff4d00">기본세율 +${opt.houses === '3' ? '30' : '20'}%p</strong></div>` : ''}
     <div><span>과세표준 (기본공제 250만 차감)</span><strong>${fmtMan(s.base)}</strong></div>
     <div><span>산출세액 + 지방소득세 10%</span><strong>${fmtMan(now.total)}</strong></div>`;
@@ -646,7 +675,9 @@ function calculate() {
     const alt = computeTax({ ...opt, houses: '1' });
     scenarios.push({ name: '1주택 상태로 만든 후 매도', tax: alt.total, desc: '세대분리·다른 주택 선매도 등으로 1세대 1주택이 되면 비과세·장특공 우대가 적용됩니다.' });
   }
-  if (isOne && (opt.live < 10 || opt.hold < 10)) {
+  // 승계조합원입주권은 장특공이 배제되므로 이 시나리오를 띄우면 안 된다(달성 불가능한 절세안)
+  const ltScenarioOk = opt.assetType !== 'right' || opt.origMember;
+  if (isOne && ltScenarioOk && (opt.live < 10 || opt.hold < 10)) {
     const alt = computeTax({ ...opt, hold: Math.max(opt.hold, 10), live: 10 });
     scenarios.push({ name: '보유·거주 10년 채우기 (장특공 80%)', tax: alt.total, desc: '보유 40% + 거주 40%, 최대 80% 공제로 과세대상이 크게 줄어듭니다.' });
   }
