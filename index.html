@@ -297,6 +297,7 @@
           <input type="checkbox" id="sangsaeng">
           <label for="sangsaeng">상생임대차계약 체결·유지</label>
         </div>
+        <div class="hint">직전 계약 대비 임대료 <strong>5% 이내 인상</strong> + 직전 계약 <strong>1년 6개월 이상</strong> 임대 + 상생계약 <strong>2년 이상</strong> 임대(2026년 12월 31일까지 체결분). 1세대 1주택 비과세 거주요건과 <strong>장기보유특별공제 1주택 우대(표2) 진입 거주요건이 함께 면제</strong>됩니다. 다만 <strong>거주기간별 공제(연 4%)는 실제 거주한 기간으로만</strong> 계산돼, 실거주 2년 미만이면 보유기간분만 받습니다 (소득세법 시행령 §155조의3①)</div>
         <div class="hint" style="margin-top:14px;border-left:4px solid var(--accent);padding:10px 12px;background:var(--gray)">
           🔴 <strong>다주택 중과 유예는 2026년 5월 9일자로 종료됐습니다.</strong> 현재 조정대상지역 2주택은 기본세율 +20%p, 3주택 이상은 +30%p가 붙고 <strong>장기보유특별공제도 받지 못합니다.</strong> 위 두 항목을 체크하면 자동 반영됩니다.<br>
           단 2026년 5월 9일까지 계약을 마친 건은 경과조치로 유예가 유지됩니다(강남·서초·송파·용산은 계약일로부터 4개월, 2025년 10월 16일 신규 지정 지역은 6개월 내 양도). 해당된다면 "현재 조정대상지역"을 체크하지 마세요.
@@ -558,11 +559,16 @@ function computeTax(opt) {
   // 장기보유특별공제 (분양권은 미적용 / 중과 대상은 배제 — 소득세법 §95②)
   // 승계조합원입주권은 공제 자체가 배제 — §95②는 대상을 원조합원으로 한정하고 "조합원으로부터 취득한 것"은 제외한다
   const ltEligible = !isRight || !!opt.origMember;
+  // 표2(1주택 우대) 진입 판정 — 시행령 §159조의4는 "보유기간 중 거주기간 2년 이상"을 요구하지만,
+  // 상생임대주택은 §155조의3①에 따라 §154①·§155⑳1과 함께 §159조의4의 거주기간 제한도 받지 않는다
+  const table2 = (isHouse || isRight) && exemptOk && (opt.live >= 2 || opt.sangsaeng);
+  // 거주기간별 공제율은 실제 거주기간 기준 — §155조의3은 거주기간의 "제한"을 풀 뿐 2년 거주로 의제하지 않는다.
+  // 표2의 거주기간 구간은 2년부터 시작하므로, 실거주 2년 미만이면 거주분 공제는 0%(보유분만 받는다)
+  const liveRate = opt.live >= 2 ? Math.min(opt.live * 0.04, 0.4) : 0;
   let ltRate = 0;
   if (opt.assetType !== 'presale' && opt.hold >= 3 && !heavyApplies && ltEligible) {
-    if ((isHouse || isRight) && exemptOk && opt.live >= 2) {
-      // 1주택 우대(표2): 보유 4%/년 + 거주 4%/년, 각 최대 40% — 거주 2년 이상일 때만
-      ltRate = Math.min(opt.hold * 0.04, 0.4) + Math.min(opt.live * 0.04, 0.4);
+    if (table2) {
+      ltRate = Math.min(opt.hold * 0.04, 0.4) + liveRate; // 표2: 보유 4%/년 + 거주 4%/년, 각 최대 40%
     } else {
       ltRate = Math.min(opt.hold * 0.02, 0.3); // 일반(표1) 2%/년, 최대 30%
     }
@@ -595,7 +601,8 @@ function computeTax(opt) {
   }
 
   return { total: tax * 1.1, steps: { gain, taxable, ltDeduct, base: baseSum }, exempt: exemptOk, heavy: heavyApplies,
-           ltBlocked: isRight && !ltEligible && opt.hold >= 3 && !heavyApplies, preRatio, preUnknown };
+           ltBlocked: isRight && !ltEligible && opt.hold >= 3 && !heavyApplies, preRatio, preUnknown,
+           lt2NoLive: table2 && opt.live < 2 && ltRate > 0 };
 }
 
 function toggleFields() {
@@ -653,7 +660,7 @@ function calculate() {
   document.getElementById('detailRows').innerHTML = `
     <div><span>양도차익</span><strong>${fmtMan(s.gain)}</strong></div>
     <div><span>과세대상 양도차익${now.exempt && opt.sale > 120000 ? ' (12억 초과분 안분)' : ''}</span><strong>${fmtMan(s.taxable)}</strong></div>
-    <div><span>장기보유특별공제${now.heavy ? ' <em style="color:#ff4d00;font-style:normal">— 중과 대상이라 배제</em>' : ''}${now.ltBlocked ? ' <em style="color:#ff4d00;font-style:normal">— 승계조합원입주권이라 배제</em>' : ''}${now.preRatio < 1 ? ` <em style="font-style:normal;opacity:.75">— 인가 전 차익 ${Math.round(now.preRatio * 100)}%에만 적용</em>` : ''}</span><strong>-${fmtMan(s.ltDeduct)}</strong></div>
+    <div><span>장기보유특별공제${now.heavy ? ' <em style="color:#ff4d00;font-style:normal">— 중과 대상이라 배제</em>' : ''}${now.ltBlocked ? ' <em style="color:#ff4d00;font-style:normal">— 승계조합원입주권이라 배제</em>' : ''}${now.preRatio < 1 ? ` <em style="font-style:normal;opacity:.75">— 인가 전 차익 ${Math.round(now.preRatio * 100)}%에만 적용</em>` : ''}${now.lt2NoLive ? ' <em style="font-style:normal;opacity:.75">— 상생임대 특례로 1주택 우대(표2) 적용, 단 거주기간분은 실거주 2년 미만이라 0%</em>' : ''}</span><strong>-${fmtMan(s.ltDeduct)}</strong></div>
     ${now.preUnknown ? `<div><span style="color:#ff4d00">⚠ 인가일 평가액 미입력</span><strong style="color:#ff4d00;font-size:.9em">전액 인가 전 차익으로 계산 — 공제 과대 가능</strong></div>` : ''}
     ${now.heavy ? `<div><span>다주택 중과</span><strong style="color:#ff4d00">기본세율 +${opt.houses === '3' ? '30' : '20'}%p</strong></div>` : ''}
     <div><span>과세표준 (기본공제 250만 차감)</span><strong>${fmtMan(s.base)}</strong></div>
@@ -674,7 +681,7 @@ function calculate() {
   }
   if (isOne && opt.adjusted && opt.live < 2 && !opt.sangsaeng) {
     const alt = computeTax({ ...opt, sangsaeng: true });
-    scenarios.push({ name: '상생임대차계약 활용', tax: alt.total, desc: '5% 이내 인상 상생임대 요건을 채우면 실거주 없이 거주요건이 면제됩니다.' });
+    scenarios.push({ name: '상생임대차계약 활용', tax: alt.total, desc: '5% 이내 인상 상생임대 요건을 채우면 실거주 없이 비과세 거주요건이 면제되고, 장기보유특별공제도 1주택 우대(표2)로 올라갑니다. 단 거주기간분 공제는 실제 거주한 기간만 인정됩니다.' });
   }
   if (isHouse && !isOne) {
     const alt = computeTax({ ...opt, houses: '1' });
