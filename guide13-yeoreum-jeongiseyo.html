@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>여름 전기요금 계산법 — 누진 구간·에어컨 전기세 총정리 (2026) | 절세랩</title>
+<link rel="canonical" href="https://howmuchlab.com/jeolse-lab/guide13-yeoreum-jeongiseyo.html">
+<meta name="description" content="7~8월은 누진 구간이 300·450kWh로 완화됩니다. 2026 주택용 전기요금 구간별 단가표, 에어컨·제습기 사용량으로 내 구간을 계산하는 법, 350kWh 사용 시 실제 요금 예시까지 정리했습니다.">
+<style>
+  :root { --ink: #111111; --paper: #ffffff; --accent: #ff4d00; --gray: #f4f4f4; --mid: #757575; --line: #e0e0e0; }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, "Pretendard", "Noto Sans KR", sans-serif; color: var(--ink); background: var(--paper); line-height: 1.75; }
+  .wrap { max-width: 760px; margin: 0 auto; padding: 0 20px; }
+  header { border-bottom: 2px solid var(--ink); }
+  .nav { display: flex; justify-content: space-between; align-items: center; padding: 18px 0; }
+  .logo { font-size: 22px; font-weight: 900; letter-spacing: -0.5px; color: var(--ink); text-decoration: none; }
+  .logo span { color: var(--accent); }
+  .nav a { color: var(--ink); text-decoration: none; font-weight: 700; font-size: 14px; margin-left: 20px; }
+  .label { display: inline-block; background: var(--ink); color: #fff; font-size: 12px; font-weight: 800; letter-spacing: 1.5px; padding: 6px 12px; margin: 48px 0 20px; }
+  h1 { font-size: clamp(28px, 5vw, 42px); font-weight: 900; letter-spacing: -1.5px; line-height: 1.2; margin-bottom: 40px; }
+  article h2 { font-size: 22px; font-weight: 900; letter-spacing: -0.5px; margin: 40px 0 14px; padding-top: 8px; border-top: 2px solid var(--ink); }
+  article p { margin-bottom: 16px; font-size: 16px; }
+  article ul { margin: 0 0 16px 22px; }
+  article li { margin-bottom: 8px; font-size: 16px; }
+  article strong { font-weight: 800; }
+  article a { color: var(--accent); font-weight: 700; }
+  article table { width: 100%; border-collapse: collapse; margin: 0 0 16px; font-size: 14px; }
+  article th, article td { border: 2px solid var(--ink); padding: 10px 12px; text-align: left; }
+  article th { background: var(--ink); color: #fff; font-weight: 800; }
+  .formula { background: var(--gray); border-left: 4px solid var(--accent); padding: 14px 16px; font-weight: 800; font-size: 15px; margin-bottom: 16px; }
+  .cta { margin: 48px 0; background: var(--ink); color: #fff; padding: 28px 24px; }
+  .cta h3 { font-size: 20px; font-weight: 900; margin-bottom: 6px; }
+  .cta p { font-size: 14px; opacity: .8; margin-bottom: 16px; }
+  .cta a { display: inline-block; background: var(--accent); color: #fff; text-decoration: none; font-weight: 900; padding: 12px 28px; font-size: 15px; }
+  .other { margin: 48px 0; }
+  .other h3 { font-size: 16px; font-weight: 900; margin-bottom: 12px; }
+  .other a { display: block; color: var(--ink); text-decoration: none; font-weight: 700; font-size: 14px; padding: 10px 0; border-bottom: 1px solid var(--line); }
+  .other a:hover { color: var(--accent); }
+  .disclaimer { margin: 32px 0; padding: 16px; background: var(--gray); font-size: 12px; color: var(--mid); border-left: 4px solid var(--accent); }
+  footer { border-top: 2px solid var(--ink); padding: 28px 0; margin-top: 48px; font-size: 13px; color: var(--mid); }
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap nav">
+    <a class="logo" href="index.html">절세<span>랩</span></a>
+    <nav>
+      <a href="index.html#calc">계산기</a>
+      <a href="index.html#guide">절세 가이드</a>
+    </nav>
+  </div>
+</header>
+<div class="wrap">
+  <span class="label">생활 절세 02</span>
+  <h1>여름 전기요금, 누진 구간만 알아도 덜 낸다</h1>
+  <article>
+<p><strong>먼저 결론입니다.</strong> 주택용 전기요금은 쓴 만큼이 아니라 <strong>구간을 넘을 때마다 단가가 뛰는 누진제</strong>입니다. 1단계와 3단계의 단가 차이는 약 2.6배. 다행히 <strong>7월 1일~8월 31일은 누진 구간이 300kWh·450kWh로 완화</strong>되어, 같은 350kWh를 써도 6월보다 7월 고지서가 약 9,500원 적게 나옵니다. 내 사용량이 어느 구간에 있는지만 알면 "에어컨을 몇 시간 더 틀어도 되는지"를 숫자로 판단할 수 있습니다.</p>
+
+<h2>2026 주택용 누진 구간과 단가 (저압 기준)</h2>
+<table>
+<tr><th>구간</th><th>일반 기간</th><th>하계(7.1~8.31)</th><th>기본요금</th><th>전력량요금</th></tr>
+<tr><td>1단계</td><td>200kWh 이하</td><td>300kWh 이하</td><td>910원</td><td>120.0원/kWh</td></tr>
+<tr><td>2단계</td><td>201~400kWh</td><td>301~450kWh</td><td>1,600원</td><td>214.6원/kWh</td></tr>
+<tr><td>3단계</td><td>400kWh 초과</td><td>450kWh 초과</td><td>7,300원</td><td>307.3원/kWh</td></tr>
+</table>
+<p>여름에는 1단계 상한이 200→300kWh로 100kWh, 2단계 상한이 400→450kWh로 50kWh 늘어납니다. 단가는 그대로지만 <strong>싼 구간이 넓어지는 것</strong>이 하계 완화의 핵심입니다. 실제 고지서에는 여기에 기후환경요금·연료비조정액과 부가가치세(10%)·전력산업기반기금이 더해지므로, 아래 예시 금액보다 다소 높게 청구됩니다.</p>
+
+<h2>같은 350kWh, 6월과 7월 요금 비교</h2>
+<p>기본요금+전력량요금 기준으로 직접 계산해 보면 이렇게 갈립니다.</p>
+<div class="formula">6월(일반): 200×120.0 + 150×214.6 = 56,190원 + 기본요금 1,600원 = 57,790원</div>
+<div class="formula">7월(하계): 300×120.0 + 50×214.6 = 46,730원 + 기본요금 1,600원 = 48,330원</div>
+<p>같은 사용량인데 <strong>약 9,460원 차이</strong>입니다. 반대로 말하면, 하계 완화가 끝나는 <strong>9월에 여름 습관 그대로 쓰는 것이 진짜 요금 폭탄의 원인</strong>이 됩니다. 9월부터는 다시 200kWh부터 2단계가 시작되기 때문입니다.</p>
+
+<h2>에어컨·제습기, 내 사용량으로 환산하는 법</h2>
+<div class="formula">추가 사용량(kWh) = 소비전력(kW) × 하루 사용시간 × 30일</div>
+<ul>
+<li><strong>에어컨</strong> — 제품 라벨의 소비전력이 1.2kW라면, 하루 6시간 × 30일 = <strong>월 216kWh 추가</strong>. 인버터형은 설정온도 도달 후 소비전력이 내려가므로 실제로는 이보다 적게 나오는 경우가 많습니다.</li>
+<li><strong>제습기</strong> — 소비전력 0.3kW 기준 하루 8시간 × 30일 = <strong>월 72kWh 추가</strong>. "제습기 때문에 폭탄"보다는, 제습기+에어컨+기존 사용량의 합이 구간을 넘는 순간이 문제입니다.</li>
+</ul>
+<p>기존에 월 200kWh를 쓰는 집이라면 에어컨 216kWh가 더해질 때 합계 416kWh — 일반 기간이면 3단계 진입이지만 하계에는 2단계에 머뭅니다. <strong>내 평소 사용량은 한전 고지서 또는 한전:ON 앱에서 월별로 확인</strong>할 수 있습니다.</p>
+
+<h2>구간을 지키는 현실적인 방법 4가지</h2>
+<p><strong>① 내 구간 위치부터 확인.</strong> 한전:ON 앱의 실시간 사용량으로 이번 달 누적 kWh를 보고, 450kWh(하계 3단계 경계)까지 여유를 계산합니다.</p>
+<p><strong>② 인버터 에어컨은 껐다 켜지 않기.</strong> 잦은 재기동이 오히려 소비전력을 키웁니다. 적정 온도로 연속 운전이 유리합니다.</p>
+<p><strong>③ 에어컨+선풍기 조합.</strong> 설정온도를 1~2도 올리고 선풍기(소비전력 약 0.05kW)로 체감온도를 보완하면 시간당 사용량이 눈에 띄게 줄어듭니다.</p>
+<p><strong>④ 주택용 에너지캐시백 신청.</strong> 직전 사용량보다 절감하면 kWh당 캐시백을 돌려주는 한전 제도입니다. 신청은 한전:ON에서 무료이며, 신청만 해두면 손해 볼 것이 없습니다.</p>
+
+<h2>자주 묻는 질문</h2>
+<p><strong>Q. 누진 구간은 검침일 기준인가요?</strong><br>네. 우리 집 검침일에 따라 "한 달"의 범위가 달라집니다. 검침일이 15일이면 6월 15일~7월 14일 사용분이 한 고지서에 잡히므로, 하계 요금은 일할 계산으로 반영됩니다.</p>
+<p><strong>Q. 351kWh를 쓰면 전체가 2단계 단가로 계산되나요?</strong><br>아닙니다. 구간별로 쪼개서 계산합니다. 하계 기준 300kWh까지는 120.0원, 넘는 51kWh만 214.6원이 적용됩니다.</p>
+<p><strong>Q. 고지서 금액이 위 계산보다 큰 이유는요?</strong><br>기후환경요금·연료비조정액, 부가가치세 10%, 전력산업기반기금이 추가되기 때문입니다. TV 수신료가 합산 청구되는 가구도 있습니다.</p>
+<p><strong>Q. 아파트 관리비에 포함된 전기요금도 같은 구조인가요?</strong><br>세대별 계약 방식(단일계약·종합계약)에 따라 적용 단가가 다를 수 있습니다. 관리사무소에 계약 방식을 확인해 보세요.</p>
+
+<h2>확인처</h2>
+<ul>
+<li>한국전력 사이버지점·한전:ON 앱 — 월별 사용량, 요금 계산기, 에너지캐시백 신청</li>
+<li>고지서의 "사용량(kWh)" 항목 — 최근 12개월 추이가 함께 표기됩니다</li>
+</ul>
+<p>단가와 구간은 2026년 7월 기준이며, 요금 체계는 개정될 수 있습니다. 정확한 금액은 한전 요금 계산기로 확인하시기 바랍니다.</p>
+  </article>
+  <div class="cta">
+    <h3>생활 속 금액, 숫자로 확인하고 싶다면</h3>
+    <p>양도세·육아휴직급여·실업급여·대출 갈아타기 — 30초 만에 계산해 보세요.</p>
+    <a href="https://howmuchlab.com/">HowMuch Lab 전체 계산기 →</a>
+  </div>
+  <div class="cta" style="background:#fff;border:3px solid var(--ink)">
+    <h3 style="color:var(--ink)">가이드 11편을 한 권으로 — 절세 전략 PDF (준비 중)</h3>
+    <p style="color:#757575;opacity:1">매도 시점 기준 실행 순서와 체크리스트로 재구성한 PDF를 준비하고 있습니다. 출시되면 이메일로 한 번만 알려드립니다.</p>
+    <a href="index.html#pdf">출시 알림 신청 →</a>
+  </div>
+  <div class="other">
+    <h3>다른 가이드</h3>
+    <a href="guide12-minsaeng-jiwongeum.html">생활 절세 01 — 2026 민생회복지원금, 우리 지역은 얼마 주나</a>
+    <a href="guide01-bigwase-12eok.html">GUIDE 01 — 1세대 1주택 비과세, 12억의 진실</a>
+    <a href="guide04-jangteukgong-80.html">GUIDE 04 — 장기보유특별공제 최대 80% 받는 법</a>
+    <a href="guide07-hapsan-gwase.html">GUIDE 07 — 같은 해에 2건 팔면 세금이 늘어난다</a>
+    <a href="guide11-dajutaek-junggwa.html">GUIDE 11 — 다주택 중과, 2026년 5월 유예 종료 이후</a>
+  </div>
+  <div class="disclaimer">⚠️ 본 글은 일반적인 요금 정보를 다루며, 실제 청구액은 계약 종류·검침일·부가 항목에 따라 달라질 수 있습니다. 정확한 금액은 한국전력 공식 요금 계산기로 확인하시기 바랍니다.</div>
+</div>
+<footer><div class="wrap"><nav aria-label="다른 무료 계산기" data-labnav="1" style="margin-bottom:14px;display:flex;gap:16px;flex-wrap:wrap;justify-content:center;font-weight:800"><a href="https://howmuchlab.com/margin-lab/" style="color:#ff4d00;text-decoration:none">아마존 마진 계산기</a><a href="https://howmuchlab.com/loan-lab/" style="color:#ff4d00;text-decoration:none">대출 갈아타기 계산기</a><a href="https://howmuchlab.com/" style="color:#ff4d00;text-decoration:none">전체 계산기 →</a></nav>절세랩 © 2026 · 본 사이트의 모든 내용은 참고용이며 법적 효력이 없습니다</div><div class="wrap sitewide-links" style="margin-top:16px;font-size:13px;opacity:.8"><a href="https://howmuchlab.com/" style="color:inherit;text-decoration:none;font-weight:700;margin-right:14px">홈</a><a href="https://howmuchlab.com/about.html" style="color:inherit;text-decoration:none;font-weight:700;margin-right:14px">소개</a><a href="https://howmuchlab.com/contact.html" style="color:inherit;text-decoration:none;font-weight:700;margin-right:14px">문의</a><a href="https://howmuchlab.com/privacy.html" style="color:inherit;text-decoration:none;font-weight:700">개인정보처리방침</a><a href="https://howmuchlab.com/terms.html" style="color:inherit;text-decoration:none;font-weight:700;margin-left:14px">이용약관</a></div>
+</footer>
+</body>
+</html>

@@ -418,7 +418,31 @@
         <h3>다주택 중과, 2026년 5월 유예 종료 이후</h3>
         <p>중과 대상 판정 3가지, 장기보유특별공제 배제의 실제 타격, 경과조치 기한 4·6개월.</p>
       </a>
+      <a class="guide-card" href="guide12-minsaeng-jiwongeum.html">
+        <div class="num">생활 절세 01</div>
+        <h3>2026 민생회복지원금, 우리 지역은 얼마 주나</h3>
+        <p>지자체별로 금액·대상·기한이 전부 다른 이유, 보조금24로 내 지원금을 3분 만에 확인하는 순서.</p>
+      </a>
+      <a class="guide-card" href="guide13-yeoreum-jeongiseyo.html">
+        <div class="num">생활 절세 02</div>
+        <h3>여름 전기요금, 누진 구간만 알아도 덜 낸다</h3>
+        <p>7~8월 누진 구간 완화(300·450kWh)의 의미, 에어컨·제습기 사용량으로 내 구간 계산하는 법.</p>
+      </a>
     </div>
+  </section>
+
+  <section id="pdf">
+    <span class="section-label">Coming Soon</span>
+    <h2>절세 가이드를 한 권으로 — 양도세 절세 전략 PDF</h2>
+    <p class="sub">계산기와 가이드 11편의 내용을 매도 시점 기준 실행 순서로 재구성한 PDF를 준비하고 있습니다. 체크리스트와 함께 한 번에 훑을 수 있는 구성입니다. 출시되면 이메일로 <strong>한 번만</strong> 알려드립니다.</p>
+    <form action="https://formsubmit.co/contact@howmuchlab.com" method="POST" style="border:2px solid var(--ink);padding:28px;display:flex;flex-direction:column;gap:12px;max-width:520px">
+      <input type="hidden" name="_subject" value="[절세PDF 출시 알림] via 절세랩">
+      <input type="hidden" name="_captcha" value="false">
+      <input type="hidden" name="_next" value="https://howmuchlab.com/jeolse-lab/?pdfsub=1">
+      <input type="hidden" name="site" value="jeolse-lab-pdf">
+      <input type="email" name="email" required placeholder="이메일 주소" style="padding:14px 16px;border:2px solid var(--ink);font-size:15px;font-family:inherit">
+      <button type="submit" style="padding:16px;background:var(--accent);color:#fff;border:none;font-weight:900;font-size:16px;cursor:pointer;font-family:inherit" onmouseover="this.style.background='var(--ink)'" onmouseout="this.style.background='var(--accent)'">출시 알림 신청 →</button>
+    </form>
   </section>
 
   <section id="game">
@@ -461,7 +485,7 @@
     </nav>
     절세랩 © 2026 · 본 사이트의 모든 계산 결과는 참고용이며 법적 효력이 없습니다 · 문의: contact@howmuchlab.com
   </div>
-<div class="wrap sitewide-links" style="margin-top:16px;font-size:13px;opacity:.8"><a href="https://howmuchlab.com/" style="color:inherit;text-decoration:none;font-weight:700;margin-right:14px">홈</a><a href="https://howmuchlab.com/about.html" style="color:inherit;text-decoration:none;font-weight:700;margin-right:14px">소개</a><a href="https://howmuchlab.com/contact.html" style="color:inherit;text-decoration:none;font-weight:700;margin-right:14px">문의</a><a href="https://howmuchlab.com/privacy.html" style="color:inherit;text-decoration:none;font-weight:700">개인정보처리방침</a></div>
+<div class="wrap sitewide-links" style="margin-top:16px;font-size:13px;opacity:.8"><a href="https://howmuchlab.com/" style="color:inherit;text-decoration:none;font-weight:700;margin-right:14px">홈</a><a href="https://howmuchlab.com/about.html" style="color:inherit;text-decoration:none;font-weight:700;margin-right:14px">소개</a><a href="https://howmuchlab.com/contact.html" style="color:inherit;text-decoration:none;font-weight:700;margin-right:14px">문의</a><a href="https://howmuchlab.com/privacy.html" style="color:inherit;text-decoration:none;font-weight:700">개인정보처리방침</a><a href="https://howmuchlab.com/terms.html" style="color:inherit;text-decoration:none;font-weight:700;margin-left:14px">이용약관</a></div>
 </footer>
 
 <script>
@@ -774,6 +798,13 @@ if (new URLSearchParams(location.search).get('subscribed') === '1') {
   if (f) {
     f.outerHTML = '<div style="border:2px solid var(--accent);padding:20px 24px;font-weight:800;max-width:520px">\u2713 \uc2e0\uccad \uc644\ub8cc! \ucd9c\uc2dc\ub418\uba74 \uc774\uba54\uc77c\ub85c \ud55c \ubc88\ub9cc \uc54c\ub824\ub4dc\ub9bd\ub2c8\ub2e4.</div>';
     document.getElementById('next-lab').scrollIntoView();
+  }
+}
+if (new URLSearchParams(location.search).get('pdfsub') === '1') {
+  var pf = document.querySelector('#pdf form');
+  if (pf) {
+    pf.outerHTML = '<div style="border:2px solid var(--accent);padding:20px 24px;font-weight:800;max-width:520px">\u2713 \uc2e0\uccad \uc644\ub8cc! PDF\uac00 \ucd9c\uc2dc\ub418\uba74 \uc774\uba54\uc77c\ub85c \ud55c \ubc88\ub9cc \uc54c\ub824\ub4dc\ub9bd\ub2c8\ub2e4.</div>';
+    document.getElementById('pdf').scrollIntoView();
   }
 }
 </script>
