@@ -440,7 +440,9 @@
       <input type="hidden" name="_captcha" value="false">
       <input type="hidden" name="_next" value="https://howmuchlab.com/jeolse-lab/?pdfsub=1">
       <input type="hidden" name="site" value="jeolse-lab-pdf">
+      <input type="hidden" name="guide_src" id="guideSrc" value="direct">
       <input type="email" name="email" required placeholder="이메일 주소" style="padding:14px 16px;border:2px solid var(--ink);font-size:15px;font-family:inherit">
+      <label style="display:flex;align-items:flex-start;gap:8px;font-size:13px;color:#555;cursor:pointer;line-height:1.5"><input type="checkbox" name="newsletter_optin" value="yes" style="margin-top:2px;accent-color:var(--accent)">매주 1회, 세금·돈 계산 실전 사례를 담은 <strong>얼마랩 레터</strong>도 받아볼게요 (선택 — 메일 회신 한 번으로 언제든 수신거부)</label>
       <button type="submit" style="padding:16px;background:var(--accent);color:#fff;border:none;font-weight:900;font-size:16px;cursor:pointer;font-family:inherit" onmouseover="this.style.background='var(--ink)'" onmouseout="this.style.background='var(--accent)'">출시 알림 + 오픈 할인 신청 →</button>
     </form>
   </section>
@@ -800,6 +802,13 @@ if (new URLSearchParams(location.search).get('subscribed') === '1') {
     document.getElementById('next-lab').scrollIntoView();
   }
 }
+(function(){
+  var src = new URLSearchParams(location.search).get('src');
+  if (src && /^[a-z0-9_-]{1,30}$/.test(src)) sessionStorage.setItem('pdf_src', src);
+  var saved = sessionStorage.getItem('pdf_src');
+  var el = document.getElementById('guideSrc');
+  if (saved && el) el.value = saved;
+})();
 if (new URLSearchParams(location.search).get('pdfsub') === '1') {
   var pf = document.querySelector('#pdf form');
   if (pf) {
