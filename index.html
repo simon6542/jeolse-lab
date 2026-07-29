@@ -172,6 +172,18 @@
   gtag('js', new Date());
   gtag('config', 'G-5GXQXQES4V');
 </script>
+<script>
+  document.addEventListener('click', function(e){
+    var a = e.target.closest && e.target.closest('a[href*="kmong.com"]');
+    if(!a) return;
+    gtag('event', 'outbound_click', {
+      link_url: a.href,
+      link_domain: 'kmong.com',
+      page_src: location.pathname.replace(/^.*\//,'').replace('.html','') || 'index',
+      transport_type: 'beacon'
+    });
+  });
+</script>
   <!-- favicon (howmuchlab 돋보기₩ 마크) -->
   <link rel="icon" href="/favicon.svg" type="image/svg+xml">
   <link rel="icon" href="/favicon-32.png" sizes="32x32" type="image/png">
