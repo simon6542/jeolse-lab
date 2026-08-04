@@ -827,5 +827,37 @@ if (new URLSearchParams(location.search).get('pdfsub') === '1') {
   }
 }
 </script>
+<!-- 이탈 지점 계측 (2026-08-05). calc_complete만으로는 즉시이탈과 중도포기를 구분 못 한다.
+     GA4 커스텀 파라미터는 맞춤 측정기준 등록 전까지 보고서에 안 나오므로 이벤트 이름을 나눈다. -->
+<script>
+(function () {
+  function fire(name) {
+    if (typeof gtag !== 'function') return;
+    if (fire.sent[name]) return;
+    fire.sent[name] = 1;
+    gtag('event', name);
+  }
+  fire.sent = {};
+
+  // (1) 계산기에 처음 손댄 순간 — 도착만 한 세션과 시도한 세션을 가른다.
+  var calc = document.getElementById('calc');
+  if (calc) {
+    calc.addEventListener('input', function () { fire('calc_start'); });
+    calc.addEventListener('change', function () { fire('calc_start'); });
+  }
+
+  // (2) 읽기 깊이 — 25%는 훑기 시작, 75%는 본문까지 봤다는 신호.
+  function depth() {
+    var h = document.documentElement;
+    var max = h.scrollHeight - h.clientHeight;
+    if (max <= 0) return;
+    var pct = (window.pageYOffset || h.scrollTop) / max * 100;
+    if (pct >= 25) fire('scroll_25');
+    if (pct >= 75) fire('scroll_75');
+  }
+  window.addEventListener('scroll', depth, { passive: true });
+  depth();
+})();
+</script>
 </body>
 </html>
